@@ -1,5 +1,7 @@
 package de.delphi.phi.data;
 
+import de.delphi.phi.PhiException;
+
 import java.util.ArrayList;
 
 public class ParameterList {
@@ -19,8 +21,12 @@ public class ParameterList {
 
     public void addParameter(String name, PhiObject defaultValue){
         names.add(name);
-        defaultValues.createMember(new PhiSymbol(name));
-        defaultValues.setNamed(name, defaultValue);
+        try {
+            defaultValues.createMember(new PhiSymbol(name));
+            defaultValues.setNamed(name, defaultValue);
+        }catch(PhiException e){
+            e.printStackTrace();
+        }
     }
 
     public PhiCollection getDefaultValues(){

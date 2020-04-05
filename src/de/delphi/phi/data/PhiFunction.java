@@ -1,5 +1,6 @@
 package de.delphi.phi.data;
 
+import de.delphi.phi.PhiException;
 import de.delphi.phi.PhiScope;
 import de.delphi.phi.parser.ast.FunctionBody;
 
@@ -28,7 +29,7 @@ public class PhiFunction extends PhiObject {
     }
 
     @Override
-    public PhiObject call(PhiCollection params) {
+    public PhiObject call(PhiCollection params) throws PhiException {
         PhiCollection defaultValues = parameterList.getDefaultValues();
         PhiScope scope = new PhiScope(defaultValues);
 

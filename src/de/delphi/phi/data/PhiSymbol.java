@@ -1,6 +1,6 @@
 package de.delphi.phi.data;
 
-import de.delphi.phi.PhiRuntimeException;
+import de.delphi.phi.PhiException;
 
 public class PhiSymbol extends PhiObject{
 
@@ -32,27 +32,27 @@ public class PhiSymbol extends PhiObject{
     }
 
     @Override
-    public void declare() {
+    public void declare() throws PhiException{
         if(isBound())
             collection.createMember(this);
         else
-            throw new PhiRuntimeException("Symbol is not bound to a collection.");
+            throw new PhiException("Symbol is not bound to a collection.");
     }
 
     @Override
-    public PhiObject lookUp() {
+    public PhiObject lookUp() throws PhiException{
         if(isBound())
             return collection.getNamed(name);
         else
-            throw new PhiRuntimeException("Symbol is not bound to a collection.");
+            throw new PhiException("Symbol is not bound to a collection.");
     }
 
     @Override
-    public void assign(PhiObject value) {
+    public void assign(PhiObject value) throws PhiException{
         if(isBound())
             collection.setNamed(name, value);
         else
-            throw new PhiRuntimeException("Symbol is not bound to a collection.");
+            throw new PhiException("Symbol is not bound to a collection.");
     }
 
     @Override

@@ -1,6 +1,5 @@
 package de.delphi.phi.parser;
 
-import de.delphi.phi.PhiRuntimeException;
 import de.delphi.phi.data.*;
 
 import java.io.IOException;
@@ -578,7 +577,7 @@ class Lexer {
                 }
             }
             default:
-                throw new PhiRuntimeException("Unexpected state: " + state);
+                return null;
         }
     }
 

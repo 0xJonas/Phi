@@ -1,11 +1,13 @@
 package de.delphi.phi.parser;
 
+import de.delphi.phi.PhiException;
 import org.junit.Test;
 
 import java.io.IOException;
 import java.io.StringReader;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class LexerTest {
 
@@ -110,7 +112,7 @@ public class LexerTest {
     }
 
     @Test
-    public void testLiterals() throws IOException {
+    public void testLiterals() throws IOException, PhiException {
         String input = "\"hello \\\"world\\\"\" 123 0x1f3 0107 0b101011 1.23 .0 1. 5.5e2 200e-2  0xa.b 0x0.1p2 0b10.01 0b10.01e-11";
         Lexer lexer = new Lexer();
         lexer.setInput(new StringReader(input));

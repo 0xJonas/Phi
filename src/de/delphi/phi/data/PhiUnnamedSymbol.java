@@ -1,5 +1,7 @@
 package de.delphi.phi.data;
 
+import de.delphi.phi.PhiException;
+
 public class PhiUnnamedSymbol extends PhiSymbol {
 
     private int index;
@@ -10,17 +12,17 @@ public class PhiUnnamedSymbol extends PhiSymbol {
     }
 
     @Override
-    public void declare() {
+    public void declare() throws PhiException {
         collection.createMember(new PhiInt(index));
     }
 
     @Override
-    public PhiObject lookUp() {
+    public PhiObject lookUp() throws PhiException{
         return collection.getUnnamed(index);
     }
 
     @Override
-    public void assign(PhiObject value) {
+    public void assign(PhiObject value) throws PhiException{
         collection.setUnnamed(index, value);
     }
 

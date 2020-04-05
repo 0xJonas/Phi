@@ -1,5 +1,6 @@
 package de.delphi.phi.parser.ast;
 
+import de.delphi.phi.PhiException;
 import de.delphi.phi.PhiScope;
 import de.delphi.phi.data.PhiNull;
 import de.delphi.phi.data.PhiObject;
@@ -15,7 +16,7 @@ public class WhileExpr extends ExitableExpr{
     }
 
     @Override
-    public PhiObject eval(PhiScope parentScope) {
+    public PhiObject eval(PhiScope parentScope) throws PhiException {
         this.scope = new PhiScope(parentScope);
 
         shouldExit = false;

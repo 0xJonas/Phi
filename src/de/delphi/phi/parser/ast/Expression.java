@@ -1,5 +1,6 @@
 package de.delphi.phi.parser.ast;
 
+import de.delphi.phi.PhiException;
 import de.delphi.phi.PhiScope;
 import de.delphi.phi.data.PhiObject;
 
@@ -13,5 +14,5 @@ public abstract class Expression {
         this.parentExpression = parentExpression;
     }
 
-    public abstract PhiObject eval(PhiScope parentScope);
+    public abstract PhiObject eval(PhiScope parentScope) throws PhiException;
 }

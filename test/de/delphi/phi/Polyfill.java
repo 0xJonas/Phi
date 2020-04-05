@@ -5,7 +5,12 @@ import static org.junit.Assert.fail;
 
 public class Polyfill {
 
-    public static <T extends Throwable> void assertThrows(String message, Class<T> expectedType, Runnable code){
+    @FunctionalInterface
+    public interface ThrowingFunction<T extends Throwable> {
+        void run() throws T;
+    }
+
+    public static <T extends Throwable> void assertThrows(String message, Class<T> expectedType, ThrowingFunction<T> code){
         boolean throwsFailed = false;
         try {
             code.run();

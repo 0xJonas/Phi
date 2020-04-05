@@ -10,21 +10,25 @@ public class PhiScope extends PhiCollection{
 
     public PhiScope(PhiCollection parentScope){
         this.parentScope = parentScope;
-        PhiCollection superClassList = new PhiCollection();
-        superClassList.createMember(new PhiInt(0));
-        superClassList.setUnnamed(0, parentScope);
-        super.setNamed("super", superClassList);
+        try {
+            PhiCollection superClassList = new PhiCollection();
+            superClassList.createMember(new PhiInt(0));
+            superClassList.setUnnamed(0, parentScope);
+            super.setNamed("super", superClassList);
+        }catch(PhiException e){
+            e.printStackTrace();
+        }
     }
 
     @Override
-    public PhiObject getNamed(String key) {
+    public PhiObject getNamed(String key) throws PhiException{
         if(key.equals("this") || key.equals("length") || key.equals("super"))
             return parentScope.getNamed(key);
         return super.getNamed(key);
     }
 
     @Override
-    public void setNamed(String key, PhiObject value) {
+    public void setNamed(String key, PhiObject value) throws PhiException{
         if(key.equals("this") || key.equals("length") || key.equals("super")) {
             parentScope.getNamed(key);
             return;

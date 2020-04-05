@@ -1,5 +1,6 @@
 package de.delphi.phi.parser.ast;
 
+import de.delphi.phi.PhiException;
 import de.delphi.phi.PhiScope;
 import de.delphi.phi.data.PhiObject;
 
@@ -17,7 +18,7 @@ public class FunctionBody extends ExitableExpr {
     }
 
     @Override
-    public PhiObject eval(PhiScope parentScope) {
+    public PhiObject eval(PhiScope parentScope) throws PhiException {
         PhiObject result = body.eval(parentScope);
         if(shouldExit)
             return returnValue;
