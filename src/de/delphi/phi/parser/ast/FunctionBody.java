@@ -11,11 +11,8 @@ public class FunctionBody extends ExitableExpr {
 
     private Expression body;
 
-    public FunctionBody(){
+    public FunctionBody(Expression body){
         super(null);
-    }
-
-    public void setBody(Expression body){
         this.body = body;
     }
 

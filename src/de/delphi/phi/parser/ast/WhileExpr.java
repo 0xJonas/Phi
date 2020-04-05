@@ -8,15 +8,9 @@ public class WhileExpr extends ExitableExpr{
 
     private Expression condition, body;
 
-    public WhileExpr(Expression parentExpr){
+    public WhileExpr(Expression parentExpr, Expression condition, Expression body){
         super(parentExpr);
-    }
-
-    public void setCondition(Expression condition){
         this.condition = condition;
-    }
-
-    public void setBody(Expression body){
         this.body = body;
     }
 

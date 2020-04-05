@@ -8,23 +8,11 @@ public class ForExpr extends ExitableExpr{
 
     private Expression init, condition, iteration, body;
 
-    public ForExpr(Expression parentExpr){
+    public ForExpr(Expression parentExpr, Expression init, Expression condition, Expression iteration, Expression body){
         super(parentExpr);
-    }
-
-    public void setInit(Expression init){
         this.init = init;
-    }
-
-    public void setCondition(Expression condition) {
         this.condition = condition;
-    }
-
-    public void setIteration(Expression iteration) {
         this.iteration = iteration;
-    }
-
-    public void setBody(Expression body) {
         this.body = body;
     }
 

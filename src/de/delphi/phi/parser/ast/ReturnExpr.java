@@ -1,18 +1,14 @@
 package de.delphi.phi.parser.ast;
 
 import de.delphi.phi.PhiScope;
-import de.delphi.phi.data.PhiNull;
 import de.delphi.phi.data.PhiObject;
 
 public class ReturnExpr extends Expression {
 
-    private PhiObject retVal = PhiNull.NULL;
+    private PhiObject retVal;
 
-    public ReturnExpr(Expression parentExpr){
+    public ReturnExpr(Expression parentExpr, PhiObject retVal){
         super(parentExpr);
-    }
-
-    public void setReturnValue(PhiObject retVal){
         this.retVal = retVal;
     }
 

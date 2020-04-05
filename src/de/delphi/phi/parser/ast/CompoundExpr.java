@@ -8,19 +8,11 @@ import java.util.ArrayList;
 
 public class CompoundExpr extends ExitableExpr{
 
-    public static final int EXIT_END = 0;
-    public static final int EXIT_BREAK = 1;
-    public static final int EXIT_CONTINUE = 2;
-    public static final int EXIT_RETURN = 3;
-
     private ArrayList<Expression> children;
 
-    public CompoundExpr(Expression parentExpr){
+    public CompoundExpr(Expression parentExpr, ArrayList<Expression> children){
         super(parentExpr);
-    }
-
-    public ArrayList<Expression> getChildren(){
-        return children;
+        this.children = new ArrayList<>(children);
     }
 
     public PhiObject eval(PhiScope parentScope){

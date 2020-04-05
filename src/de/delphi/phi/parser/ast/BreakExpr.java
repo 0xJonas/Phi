@@ -1,18 +1,14 @@
 package de.delphi.phi.parser.ast;
 
 import de.delphi.phi.PhiScope;
-import de.delphi.phi.data.PhiNull;
 import de.delphi.phi.data.PhiObject;
 
 public class BreakExpr extends Expression {
 
-    private PhiObject retVal = PhiNull.NULL;
+    private PhiObject retVal;
 
-    public BreakExpr(Expression parentExpr){
+    public BreakExpr(Expression parentExpr, PhiObject retVal){
         super(parentExpr);
-    }
-
-    public void setReturnValue(PhiObject retVal){
         this.retVal = retVal;
     }
 
