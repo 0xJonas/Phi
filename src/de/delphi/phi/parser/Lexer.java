@@ -5,10 +5,16 @@ import de.delphi.phi.data.*;
 import java.io.IOException;
 import java.io.Reader;
 
+/**
+ * Turns text input into a stream of tokens.
+ */
 class Lexer {
 
     private enum State {
+        //Starting state
         START,
+
+        //Reserved words
         I, IF,
         T, TH, THE, THEN,
         E, EL, ELS, ELSE,
@@ -26,11 +32,13 @@ class Lexer {
            FA, FAL, FALS, FALSE,
            NU, NUL, NULL,
 
+        //Parentheses, brackets, braces and associated stuff
         LEFT_PARENTHESIS, RIGHT_PARENTHESIS, COMMA, SEMICOLON,
         LEFT_BRACKET, RIGHT_BRACKET,
         LEFT_BRACE, RIGHT_BRACE,
         PERIOD, QUOTE,
 
+        //Operators
         ADD, ASSIGN_ADD,
         SUB, ASSIGN_SUB, ARROW,
         MUL, ASSIGN_MUL,
@@ -43,6 +51,8 @@ class Lexer {
         ASSIGN, EQUALS,
         LESS_THAN, LESS_EQUALS, SHIFT_LEFT, ASSIGN_SHIFT_LEFT,
         GREATER_THAN, GREATER_EQUALS, SHIFT_RIGHT, ASSIGN_SHIFT_RIGHT,
+
+        //Literals and symbols
         ZERO, INT_LITERAL,
         FLOAT_LITERAL, FLOAT_EXPONENT_SIGN, FLOAT_EXPONENT,
         SYMBOL,
@@ -56,24 +66,54 @@ class Lexer {
     private static final int BASE_DECIMAL = 10;
     private static final int BASE_HEX = 16;
 
+    /**
+     * Buffer for current lexeme
+     */
     private StringBuilder lexeme;
 
+    /**
+     * Information on the current position in the input
+     */
     private int line, col, tokenStartCol;
 
+    /**
+     * The current code point
+     */
     private int peek;
 
+    /**
+     * The current base for numerical literals
+     */
     private int base = BASE_DECIMAL;
 
+    /**
+     * Current state of the lexer
+     */
     private State state = State.START;
 
+    /**
+     * Input source for the lexer.
+     */
     private Reader reader;
 
+    /**
+     * Sets the input for the lexer and resets it's state.
+     * @param reader The input reader
+     */
     public void setInput(Reader reader){
         this.reader = reader;
         lexeme = new StringBuilder();
         state = State.START;
     }
 
+    /**
+     * Checks whether the given code point is valid as the first character of a symbol.
+     *
+     * Valid characters are upper- and lowercase letters, the underscore '_', the dollar sign '$'
+     * and the question mark '?'. A symbol can NOT start with a digit.
+     * @param cp The code point to check.
+     * @return true if the code point can start a symbol.
+     */
     private boolean isValidSymbolStart(int cp){
         return Character.isLetter(cp)
                 || cp == '_'
@@ -81,10 +121,34 @@ class Lexer {
                 || cp == '?';
     }
 
+    /**
+     * Checks whether the given code point can be part of a symbol.
+     *
+     * Valid characters are all characters that can start a symbol as well as digits.
+     * @param cp The code point to check.
+     * @return true if the code point can be part of a symbol.
+     */
     private boolean isValidSymbolPart(int cp){
         return isValidSymbolStart(cp) || Character.isDigit(cp);
     }
 
+    /**
+     * Converts a code point to it's corresponding escaped character.
+     *
+     * The possible characters are:
+     * <ul>
+     *     <li>a -> bell</li>
+     *     <li>b -> backspace</li>
+     *     <li>f -> form feed</li>
+     *     <li>n -> newline</li>
+     *     <li>r -> carriage return</li>
+     *     <li>t -> tab</li>
+     * </ul>
+     *
+     * All other characters get returned without change.
+     * @param cp The code point to escape.
+     * @return The escaped character or the character itself if there was no corresponding escape character.
+     */
     private int escapeCodePoint(int cp){
         switch(cp){
             case 'a': return 7; //Bell
@@ -97,24 +161,46 @@ class Lexer {
         }
     }
 
+    /**
+     * Moves the lexer into a given state if the current peek character matches the {@code cp} parameter.
+     *
+     * This method is used to match reserved words. Therefore, if a match fails the lexer is put into
+     * the SYMBOL state if peek is a valid symbol character {@see isValidSymbolPart()}. Otherwise the incomplete
+     * word is interpreted as a symbol and returned.
+     * @param cp The character to match against.
+     * @param success The state to go to when the match succeeds.
+     * @return If the current peek character is does not match the input parameter and is also not a valid
+     * symbol character, a token containing the incomplete reserved word is returned. Otherweise this method returns
+     * null.
+     */
     private Token matchReservedWord(int cp, State success){
-        if(peek == cp){
+        if(peek == cp){ //Successful match
             state = success;
             return null;
-        }else if(isValidSymbolPart(peek)){
+        }else if(isValidSymbolPart(peek)){  //failed match but valid symbol character
             state = State.SYMBOL;
             return null;
-        }else{
+        }else{  //failed match and not a valid symbol character
             startNextToken();
             return makeToken(Tag.SYMBOL);
         }
     }
 
+    /**
+     * Signifies that the current peek character is the first character of a new token.
+     */
     private void startNextToken(){
         state = State.START;
         processCharacter();
     }
 
+    /**
+     * Checks whether the current peek character can be part of a symbol.
+     * Otherwise returns the supplied token. This is used to match reserved words. If a reserved has been completely
+     * matched, the next character must not be a valid symbol character (i.e. white space, operators).
+     * @param success The token to return if the current peek character is not a valid symbol character.
+     * @return The input token or null if 'peek' is a valid symbol port.
+     */
     private Token completeReservedWord(Token success){
         if(isValidSymbolPart(peek)){
             state = State.SYMBOL;
@@ -125,6 +211,16 @@ class Lexer {
         }
     }
 
+    /**
+     * Checks whether the current peek character is '='.
+     *
+     * This method is used for the various combined assignments (+= -= *= ...). If 'peek' is not '=' the
+     * supplied token is returned, which should be an operator (+ - * ...). Otherwise the lexer is moved to
+     * the state associated with the assignment operator.
+     * @param success The state to go to when 'peek' is '='.
+     * @param op The token to return when 'peek' is not '='.
+     * @return The input token or null.
+     */
     private Token matchAssignOperator(State success, Token op){
         if(peek == '='){
             state = success;
@@ -135,6 +231,12 @@ class Lexer {
         }
     }
 
+    /**
+     * Checks whether the input character is a valid digit in the given base.
+     * @param digit The digit to check.
+     * @param base The base to draw the digits from.
+     * @return true if 'digit' is valid in the given base, false otherwise.
+     */
     private boolean isValidDigitInBase(int digit, int base){
         switch(base){
             case BASE_BINARY: return digit >= '0' && digit <= '1';
@@ -145,6 +247,14 @@ class Lexer {
         return false;
     }
 
+    /**
+     * Checks whether the given character is a valid exponent indicator for the given base.
+     *
+     * Valid exponent indicators are 'p' and 'P' for hexadecimal and 'e' and 'E' for all other bases.
+     * @param c The character to check.
+     * @param base The base.
+     * @return true if c is a valid exponent indicator.
+     */
     private boolean isValidExponentIndicator(int c, int base){
         switch(base){
             case BASE_BINARY:
@@ -157,6 +267,11 @@ class Lexer {
         return false;
     }
 
+    /**
+     * Returns the length of the base indicator (the 0x in 0x7f) for a given base.
+     * @param base The base.
+     * @return The length of the indicator.
+     */
     private int baseIndicatorLength(int base){
         switch(base){
             case BASE_BINARY:
@@ -168,6 +283,13 @@ class Lexer {
         return 0;
     }
 
+    /**
+     * Converts a lexeme containing a floating point literal to a double value.
+     *
+     * @param lexeme The String to convert.
+     * @param base The base
+     * @return the double value represented by the input string.
+     */
     private double parseDoubleExtended(String lexeme, int base){
         switch(base){
             case BASE_BINARY:{
@@ -189,14 +311,33 @@ class Lexer {
         return 0.0;
     }
 
+    /**
+     * Creates a token with the given tag and the current lexeme, line number, and column number.
+     * @param tag The tag for the token
+     * @return The new token
+     */
     private Token makeToken(Tag tag){
         return new Token(tag, lexeme.toString(), line, tokenStartCol);
     }
 
+    /**
+     * Creates a Literal token containing the given value.
+     * @param value The value for the Literal.
+     * @return The new Literal.
+     */
     private Literal makeLiteral(PhiObject value){
         return new Literal(lexeme.toString(), value, line, tokenStartCol);
     }
 
+    /**
+     * Processes a single character
+     *
+     * This method checks the current 'peek' character and modifies the lexer's state accordingly.
+     * At the point this method is called the 'peek' character has not yet been added to the lexeme buffer.
+     * If the current state and 'peek' character indicate that a token is complete, that token is returned. Otherwise
+     * this method returns null.
+     * @return If a token has been completed, returns the token, otherwise null.
+     */
     private Token processCharacter(){
         switch(state) {
             case START: {
@@ -462,7 +603,8 @@ class Lexer {
             }
             case COMMENT_END: startNextToken(); return makeToken(Tag.FILLER);
 
-            case STRING_START: state = State.STRING; return makeToken(Tag.FILLER);   //Discard \" character
+            //return FILLER so the starting \" does not get added to the lexeme
+            case STRING_START: state = State.STRING; return makeToken(Tag.FILLER);
             case STRING:{
                 switch(peek){
                     case '\\': state = State.STRING_ESCAPE; return null;
@@ -472,7 +614,7 @@ class Lexer {
             }
             case STRING_ESCAPE:{
                 //No need to test code point length, since the last character will always be '\\'
-                lexeme.deleteCharAt(lexeme.length() - 1);
+                lexeme.deleteCharAt(lexeme.length() - 1);   //delete \ from lexeme
                 peek = escapeCodePoint(peek);
                 state = State.STRING;
                 return null;
@@ -581,6 +723,11 @@ class Lexer {
         }
     }
 
+    /**
+     * Returns the next token from the input stream.
+     * @return The next token.
+     * @throws IOException If something went wrong reading the input.
+     */
     public Token nextToken() throws IOException {
         Token token;
         do{
