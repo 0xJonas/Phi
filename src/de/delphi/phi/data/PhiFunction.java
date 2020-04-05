@@ -1,15 +1,21 @@
 package de.delphi.phi.data;
 
 import de.delphi.phi.PhiScope;
-import de.delphi.phi.parser.ast.Expression;
-
-import java.util.Set;
+import de.delphi.phi.parser.ast.FunctionBody;
 
 public class PhiFunction extends PhiObject {
 
-    private Expression body;
+    private FunctionBody body;
 
-    private PhiScope creationScope, paramScope;
+    private PhiScope creationScope;
+
+    private ParameterList parameterList;
+
+    public PhiFunction(PhiScope creationScope, ParameterList parameterList, FunctionBody body){
+        this.creationScope = creationScope;
+        this.parameterList = parameterList;
+        this.body = body;
+    }
 
     @Override
     public Type getType() {
@@ -23,29 +29,31 @@ public class PhiFunction extends PhiObject {
 
     @Override
     public PhiObject call(PhiCollection params) {
-        PhiScope paramScopeCopy = null;
-        try{
-            paramScopeCopy = (PhiScope) paramScope.clone();
-        }catch (CloneNotSupportedException e){
-            e.printStackTrace();
-        }
-        long numUnnamedParams = params.getNamed("length").longValue();
-        for(int i = 0; i < numUnnamedParams; i++){
-            paramScopeCopy.setUnnamed(i, params.getUnnamed(i));
+        PhiCollection defaultValues = parameterList.getDefaultValues();
+        PhiScope scope = new PhiScope(defaultValues);
+
+        PhiCollection superClasses = new PhiCollection();
+        superClasses.createMember(new PhiInt(0));
+        superClasses.setUnnamed(0, creationScope);
+        defaultValues.setNamed("super", superClasses);
+
+        for(int i = 0; i < parameterList.getParameterCount(); i++){
+            String paramName =parameterList.getName(i);
+            scope.createMember(new PhiSymbol(paramName));
+            scope.setNamed(paramName, params.getUnnamed(i));
         }
 
-        Set<String> realParamNames = paramScopeCopy.memberNames();
         for(String name: params.memberNames()){
-            if(realParamNames.contains(name))
-                paramScopeCopy.setNamed(name, params.getNamed(name));
+            if(parameterList.contains(name))
+                scope.setNamed(name, params.getNamed(name));
         }
 
-        return null;
+        return body.eval(scope);
     }
 
     @Override
     public Object clone() throws CloneNotSupportedException {
-        //TODO implement
+        //None of the fields should be changed once the function is created, so a shallow copy suffices
         return super.clone();
     }
 }
