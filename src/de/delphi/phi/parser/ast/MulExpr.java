@@ -2,7 +2,10 @@ package de.delphi.phi.parser.ast;
 
 import de.delphi.phi.PhiException;
 import de.delphi.phi.PhiScope;
-import de.delphi.phi.data.*;
+import de.delphi.phi.data.PhiFloat;
+import de.delphi.phi.data.PhiInt;
+import de.delphi.phi.data.PhiObject;
+import de.delphi.phi.data.Type;
 
 import java.util.List;
 
@@ -64,13 +67,7 @@ public class MulExpr extends Expression {
         for(int i = 0; i < operands.length; i++){
             PhiObject po2 = operands[i].eval(scope);
 
-            //Lookup symbol
-            if(po2.getType() == Type.SYMBOL) {
-                //Bind symbol to current scope if not bound already
-                if(!((PhiSymbol) po2).isBound())
-                    po2 = new PhiSymbol(po2.toString(), scope);
-                po2 = po2.lookUp();
-            }
+            po2 = bindAndLookUp(po2, scope);
 
             switch(operators[i]) {
                 case OP_MUL: result = mul(result, po2); break;
