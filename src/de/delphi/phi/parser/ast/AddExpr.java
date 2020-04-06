@@ -47,10 +47,10 @@ public class AddExpr extends Expression {
         PhiObject result = PhiInt.FALSE; // = 0
         for(int i = 0; i < operands.length; i++){
             PhiObject po2 = operands[i].eval(scope);
-            if(operators[i] == OP_ADD)
-                result = add(result, po2);
-            else if(operators[i] == OP_SUB)
-                result = sub(result, po2);
+            switch (operators[i]){
+                case OP_ADD: result = add(result, po2); break;
+                case OP_SUB: result = sub(result, po2); break;
+            }
         }
         return result;
     }
