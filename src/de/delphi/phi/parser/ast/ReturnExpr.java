@@ -1,19 +1,27 @@
 package de.delphi.phi.parser.ast;
 
+import de.delphi.phi.PhiException;
 import de.delphi.phi.PhiScope;
+import de.delphi.phi.data.PhiNull;
 import de.delphi.phi.data.PhiObject;
 
 public class ReturnExpr extends Expression {
 
-    private PhiObject retVal;
+    private Expression returnExpr;
 
-    public ReturnExpr(Expression parentExpr, PhiObject retVal){
+    public ReturnExpr(Expression parentExpr, Expression returnExpr){
         super(parentExpr);
-        this.retVal = retVal;
+        this.returnExpr = returnExpr;
     }
 
     @Override
-    public PhiObject eval(PhiScope parentScope) {
+    public PhiObject eval(PhiScope parentScope) throws PhiException {
+        PhiObject retVal = PhiNull.NULL;
+        if(returnExpr != null){
+            scope = new PhiScope(parentScope);
+            retVal = returnExpr.eval(scope);
+        }
+
         Expression current = this;
         while(!(current instanceof FunctionBody)){
             if(current instanceof ExitableExpr)
