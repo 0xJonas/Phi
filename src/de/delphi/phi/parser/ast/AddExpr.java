@@ -47,6 +47,15 @@ public class AddExpr extends Expression {
         PhiObject result = PhiInt.FALSE; // = 0
         for(int i = 0; i < operands.length; i++){
             PhiObject po2 = operands[i].eval(scope);
+
+            //Lookup symbol
+            if(po2.getType() == Type.SYMBOL) {
+                //Bind symbol to current scope if not bound already
+                if(!((PhiSymbol) po2).isBound())
+                    po2 = new PhiSymbol(po2.toString(), scope);
+                po2 = po2.lookUp();
+            }
+
             switch (operators[i]){
                 case OP_ADD: result = add(result, po2); break;
                 case OP_SUB: result = sub(result, po2); break;
