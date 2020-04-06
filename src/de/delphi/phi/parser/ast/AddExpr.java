@@ -21,23 +21,8 @@ public class AddExpr extends Expression {
         this.operators = operators.toArray(new Integer[0]);
     }
 
-    private Type findCommonType(PhiObject po1, PhiObject po2){
-        if(po1.getType() == Type.INT && po2.getType() == Type.INT)
-            return Type.INT;
-        else if(po1.getType() == Type.NULL || po2.getType() == Type.NULL)
-            return Type.NULL;
-        else if(po1.getType() == Type.FLOAT || po2.getType() == Type.FLOAT)
-            return Type.FLOAT;
-        else if(po1.getType() == Type.STRING || po2.getType() == Type.STRING)
-            return Type.STRING;
-        else if(po1.getType() == Type.SYMBOL || po2.getType() == Type.SYMBOL)
-            return Type.SYMBOL;
-        else
-            return Type.NULL;
-    }
-
     private PhiObject add(PhiObject po1, PhiObject po2) throws PhiException{
-        Type commonType = findCommonType(po1, po2);
+        Type commonType = Type.findCommonType(po1.getType(), po2.getType());
         switch(commonType){
             case INT: return new PhiInt(po1.longValue() + po2.longValue());
             case FLOAT: return new PhiFloat(po1.doubleValue() + po2.doubleValue());
@@ -48,7 +33,7 @@ public class AddExpr extends Expression {
     }
 
     private PhiObject sub(PhiObject po1, PhiObject po2) throws PhiException{
-        Type commonType = findCommonType(po1, po2);
+        Type commonType = Type.findCommonType(po1.getType(), po2.getType());
         switch(commonType){
             case INT: return new PhiInt(po1.longValue() - po2.longValue());
             case FLOAT: return new PhiFloat(po1.doubleValue() - po2.doubleValue());
