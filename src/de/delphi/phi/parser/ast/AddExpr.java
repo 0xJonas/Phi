@@ -22,7 +22,7 @@ public class AddExpr extends Expression {
     }
 
     private PhiObject add(PhiObject po1, PhiObject po2) throws PhiException{
-        Type commonType = Type.findCommonType(po1.getType(), po2.getType());
+        Type commonType = Type.coerceTypes(po1.getType(), po2.getType());
         switch(commonType){
             case INT: return new PhiInt(po1.longValue() + po2.longValue());
             case FLOAT: return new PhiFloat(po1.doubleValue() + po2.doubleValue());
@@ -33,7 +33,7 @@ public class AddExpr extends Expression {
     }
 
     private PhiObject sub(PhiObject po1, PhiObject po2) throws PhiException{
-        Type commonType = Type.findCommonType(po1.getType(), po2.getType());
+        Type commonType = Type.coerceTypes(po1.getType(), po2.getType());
         switch(commonType){
             case INT: return new PhiInt(po1.longValue() - po2.longValue());
             case FLOAT: return new PhiFloat(po1.doubleValue() - po2.doubleValue());

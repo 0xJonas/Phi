@@ -26,7 +26,7 @@ public class MulExpr extends Expression {
     }
 
     private PhiObject mul(PhiObject po1, PhiObject po2) throws PhiException{
-        Type commonType = Type.findCommonType(po1.getType(), po2.getType());
+        Type commonType = Type.coerceTypes(po1.getType(), po2.getType());
         switch(commonType){
             case INT: return new PhiInt(po1.longValue() * po2.longValue());
             case FLOAT: return new PhiFloat(po1.doubleValue() * po2.doubleValue());
@@ -35,7 +35,7 @@ public class MulExpr extends Expression {
     }
 
     private PhiObject div(PhiObject po1, PhiObject po2) throws PhiException{
-        Type commonType = Type.findCommonType(po1.getType(), po2.getType());
+        Type commonType = Type.coerceTypes(po1.getType(), po2.getType());
         switch(commonType){
             case INT: {
                 if(po2.longValue() == 0)
@@ -48,7 +48,7 @@ public class MulExpr extends Expression {
     }
 
     private PhiObject mod(PhiObject po1, PhiObject po2) throws PhiException{
-        Type commonType = Type.findCommonType(po1.getType(), po2.getType());
+        Type commonType = Type.coerceTypes(po1.getType(), po2.getType());
         switch(commonType){
             case INT: {
                 if(po2.longValue() == 0)

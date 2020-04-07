@@ -4,10 +4,10 @@ public enum Type {
     INT(0),
     FLOAT(1),
     STRING(2),
-    FUNCTION(0),
+    FUNCTION(4),
     SYMBOL(3),
-    COLLECTION(0),
-    NULL(4);
+    COLLECTION(4),
+    NULL(5);
 
     private int level;
 
@@ -26,7 +26,7 @@ public enum Type {
        return this == INT || this == FLOAT;
     }
 
-    public static Type findCommonType(Type t1, Type t2){
+    public static Type coerceTypes(Type t1, Type t2){
         if(t1 == FUNCTION || t1 == COLLECTION || t2 == FUNCTION || t2 == COLLECTION)
             return NULL;
         return t1.compare(t2) > 0 ? t2 : t1;
