@@ -17,10 +17,8 @@ public class NegationExpr extends Expression {
 
     @Override
     public PhiObject eval(PhiScope parentScope) throws PhiException {
-        scope = new PhiScope(parentScope);
-
-        PhiObject result = body.eval(scope);
-        result = bindAndLookUp(result, scope);
+        PhiObject result = body.eval(parentScope);
+        result = bindAndLookUp(result, parentScope);
 
         switch(result.getType()){
             case INT: return new PhiInt(-result.longValue());

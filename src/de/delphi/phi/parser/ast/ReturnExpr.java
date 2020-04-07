@@ -18,8 +18,8 @@ public class ReturnExpr extends Expression {
     public PhiObject eval(PhiScope parentScope) throws PhiException {
         PhiObject retVal = PhiNull.NULL;
         if(returnExpr != null){
-            scope = new PhiScope(parentScope);
-            retVal = returnExpr.eval(scope);
+            retVal = returnExpr.eval(parentScope);
+            retVal = bindAndLookUp(retVal, parentScope);
         }
 
         Expression current = this;
