@@ -1,32 +1,16 @@
 package de.delphi.phi.data;
 
-import de.delphi.phi.PhiException;
-
-import java.util.ArrayList;
+import java.util.List;
 
 public class ParameterList {
 
-    private ArrayList<String> names;
+    private String[] names;
 
     private PhiCollection defaultValues;
 
-    public ParameterList(){
-        names = new ArrayList<>();
-        defaultValues = new PhiCollection();
-    }
-
-    public void addParameter(String name){
-        names.add(name);
-    }
-
-    public void addParameter(String name, PhiObject defaultValue){
-        names.add(name);
-        try {
-            defaultValues.createMember(new PhiSymbol(name));
-            defaultValues.setNamed(name, defaultValue);
-        }catch(PhiException e){
-            e.printStackTrace();
-        }
+    public ParameterList(List<String> names, PhiCollection defaultValues){
+        this.names = names.toArray(new String[0]);
+        this.defaultValues = defaultValues;
     }
 
     public PhiCollection getDefaultValues(){
@@ -39,14 +23,18 @@ public class ParameterList {
     }
 
     public int getParameterCount(){
-        return names.size();
+        return names.length;
     }
 
     public boolean contains(String name){
-        return names.contains(name);
+        for(String s: names){
+            if(s.equals(name))
+                return true;
+        }
+        return false;
     }
 
     public String getName(int index){
-        return names.get(index);
+        return names[index];
     }
 }
