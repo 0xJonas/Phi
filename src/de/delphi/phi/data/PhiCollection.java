@@ -1,6 +1,7 @@
 package de.delphi.phi.data;
 
 import de.delphi.phi.PhiException;
+import de.delphi.phi.PhiScope;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -60,11 +61,22 @@ public class PhiCollection extends PhiObject {
      */
     private int isSuperClassCollectionOf;
 
+    private PhiScope parentScope;
+
     public PhiCollection(){
-        this(false);
+        this(null,false);
+    }
+
+    public PhiCollection(PhiScope parentScope){
+        this(parentScope, false);
     }
 
     private PhiCollection(boolean isSuperClassCollection){
+        this(null, isSuperClassCollection);
+    }
+
+    private PhiCollection(PhiScope parentScope, boolean isSuperClassCollection){
+        this.parentScope = parentScope;
         isSuperClassCollectionOf = isSuperClassCollection ? 1:0;
         namedMembers = new HashMap<>();
         unnamedMembers = new PhiObject[INITIAL_CAPACITY];
@@ -309,9 +321,12 @@ public class PhiCollection extends PhiObject {
 
         //Retrieve any other named member
         PhiObject result = getNamedRecursive(this, key);
-        if(result == null)
-            throw new PhiException(key + " is not a member of this collection.");
-        else
+        if(result == null) {
+            if(parentScope != null)
+                return parentScope.getNamed(key);
+            else
+                throw new PhiException(key + " is not a member of this collection.");
+        } else
             return result;
     }
 
@@ -559,8 +574,12 @@ public class PhiCollection extends PhiObject {
         }
         else {
             boolean success = setNamedRecursive(this, key, value);
-            if(!success)
-                throw new PhiException("Member " + key + " does not exist.");
+            if(!success) {
+                if(parentScope != null)
+                    parentScope.setNamed(key, value);
+                else
+                    throw new PhiException("Member " + key + " does not exist.");
+            }
         }
     }
 
