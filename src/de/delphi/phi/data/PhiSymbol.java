@@ -6,15 +6,15 @@ public class PhiSymbol extends PhiObject{
 
     private String name;
 
-    protected PhiCollection collection;
+    protected PhiObject location;
 
     public PhiSymbol(String value){
         this.name = value;
     }
 
-    public PhiSymbol(String value, PhiCollection collection){
+    public PhiSymbol(String value, PhiObject location){
         this.name = value;
-        this.collection = collection;
+        this.location = location;
     }
 
     @Override
@@ -28,28 +28,28 @@ public class PhiSymbol extends PhiObject{
     }
 
     public boolean isBound(){
-        return collection != null;
+        return location != null;
     }
 
     public void declare() throws PhiException{
-        if(isBound())
-            collection.createMember(this);
+        if(isBound() && location.getType() == Type.COLLECTION)
+            ((PhiCollection) location).createMember(this);
         else
             throw new PhiException("Symbol is not bound to a collection.");
     }
 
     public PhiObject lookUp() throws PhiException{
         if(isBound())
-            return collection.getNamed(name);
+            return location.getNamed(name);
         else
-            throw new PhiException("Symbol is not bound to a collection.");
+            throw new PhiException("Symbol is not bound to a location.");
     }
 
     public void assign(PhiObject value) throws PhiException{
         if(isBound())
-            collection.setNamed(name, value);
+            location.setNamed(name, value);
         else
-            throw new PhiException("Symbol is not bound to a collection.");
+            throw new PhiException("Symbol is not bound to a location.");
     }
 
     @Override
