@@ -1,7 +1,6 @@
 package de.delphi.phi.data;
 
 import de.delphi.phi.PhiException;
-import de.delphi.phi.PhiScope;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -61,13 +60,13 @@ public class PhiCollection extends PhiObject {
      */
     private int isSuperClassCollectionOf;
 
-    private PhiScope parentScope;
+    private PhiCollection parentScope;
 
     public PhiCollection(){
         this(null,false);
     }
 
-    public PhiCollection(PhiScope parentScope){
+    public PhiCollection(PhiCollection parentScope){
         this(parentScope, false);
     }
 
@@ -75,7 +74,7 @@ public class PhiCollection extends PhiObject {
         this(null, isSuperClassCollection);
     }
 
-    private PhiCollection(PhiScope parentScope, boolean isSuperClassCollection){
+    private PhiCollection(PhiCollection parentScope, boolean isSuperClassCollection){
         this.parentScope = parentScope;
         isSuperClassCollectionOf = isSuperClassCollection ? 1:0;
         namedMembers = new HashMap<>();
