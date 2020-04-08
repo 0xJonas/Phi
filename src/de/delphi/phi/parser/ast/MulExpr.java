@@ -2,10 +2,7 @@ package de.delphi.phi.parser.ast;
 
 import de.delphi.phi.PhiException;
 import de.delphi.phi.PhiScope;
-import de.delphi.phi.data.PhiFloat;
-import de.delphi.phi.data.PhiInt;
-import de.delphi.phi.data.PhiObject;
-import de.delphi.phi.data.Type;
+import de.delphi.phi.data.*;
 
 import java.util.List;
 
@@ -61,7 +58,7 @@ public class MulExpr extends Expression {
     }
 
     @Override
-    public PhiObject eval(PhiScope parentScope) throws PhiException {
+    public PhiObject eval(PhiCollection parentScope) throws PhiException {
         scope = new PhiScope(parentScope);
         PhiObject result = PhiInt.TRUE; // = 1
         for(int i = 0; i < operands.length; i++){

@@ -42,7 +42,7 @@ public class AddExpr extends Expression {
     }
 
     @Override
-    public PhiObject eval(PhiScope parentScope) throws PhiException {
+    public PhiObject eval(PhiCollection parentScope) throws PhiException {
         scope = new PhiScope(parentScope);
         PhiObject result = PhiInt.FALSE; // = 0
         for(int i = 0; i < operands.length; i++){

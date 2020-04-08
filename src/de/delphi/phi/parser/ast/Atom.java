@@ -1,6 +1,6 @@
 package de.delphi.phi.parser.ast;
 
-import de.delphi.phi.PhiScope;
+import de.delphi.phi.data.PhiCollection;
 import de.delphi.phi.data.PhiObject;
 
 public class Atom extends Expression {
@@ -13,7 +13,7 @@ public class Atom extends Expression {
     }
 
     @Override
-    public PhiObject eval(PhiScope scope) {
+    public PhiObject eval(PhiCollection scope) {
         return content;
     }
 }

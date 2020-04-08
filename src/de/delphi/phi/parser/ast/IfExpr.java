@@ -2,6 +2,7 @@ package de.delphi.phi.parser.ast;
 
 import de.delphi.phi.PhiException;
 import de.delphi.phi.PhiScope;
+import de.delphi.phi.data.PhiCollection;
 import de.delphi.phi.data.PhiNull;
 import de.delphi.phi.data.PhiObject;
 
@@ -17,7 +18,7 @@ public class IfExpr extends Expression{
     }
 
     @Override
-    public PhiObject eval(PhiScope parentScope) throws PhiException {
+    public PhiObject eval(PhiCollection parentScope) throws PhiException {
         scope = new PhiScope(parentScope);
 
         PhiObject conditionResult = condition.eval(scope);
