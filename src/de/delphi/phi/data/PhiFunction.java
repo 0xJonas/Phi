@@ -28,7 +28,6 @@ public class PhiFunction extends PhiObject {
         return super.toString();
     }
 
-    @Override
     public PhiObject call(PhiCollection params) throws PhiException {
         PhiCollection defaultValues = parameterList.getDefaultValues();
         PhiScope scope = new PhiScope(defaultValues);

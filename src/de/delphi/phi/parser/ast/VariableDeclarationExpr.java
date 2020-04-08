@@ -2,10 +2,7 @@ package de.delphi.phi.parser.ast;
 
 import de.delphi.phi.PhiException;
 import de.delphi.phi.PhiScope;
-import de.delphi.phi.data.PhiCollection;
-import de.delphi.phi.data.PhiNull;
-import de.delphi.phi.data.PhiObject;
-import de.delphi.phi.data.Type;
+import de.delphi.phi.data.*;
 
 public class VariableDeclarationExpr extends Expression {
 
@@ -29,7 +26,9 @@ public class VariableDeclarationExpr extends Expression {
             name = content.getName(i).eval(parentScope);
             if(name.getType() != Type.SYMBOL)
                 throw new PhiException("Variable name must be of type SYMBOL");
-            parentScope.createMember(name);
+            if(!((PhiSymbol) name).isBound())
+                name = new PhiSymbol(name.toString(), parentScope);
+            ((PhiSymbol) name).declare();
 
             Expression valueExpr = content.getValue(i);
             if(valueExpr != null){

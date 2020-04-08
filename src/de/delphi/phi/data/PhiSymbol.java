@@ -31,7 +31,6 @@ public class PhiSymbol extends PhiObject{
         return collection != null;
     }
 
-    @Override
     public void declare() throws PhiException{
         if(isBound())
             collection.createMember(this);
@@ -39,7 +38,6 @@ public class PhiSymbol extends PhiObject{
             throw new PhiException("Symbol is not bound to a collection.");
     }
 
-    @Override
     public PhiObject lookUp() throws PhiException{
         if(isBound())
             return collection.getNamed(name);
@@ -47,7 +45,6 @@ public class PhiSymbol extends PhiObject{
             throw new PhiException("Symbol is not bound to a collection.");
     }
 
-    @Override
     public void assign(PhiObject value) throws PhiException{
         if(isBound())
             collection.setNamed(name, value);
