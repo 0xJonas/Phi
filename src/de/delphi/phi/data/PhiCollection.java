@@ -183,7 +183,7 @@ public class PhiCollection extends PhiObject {
         if(result == null && collection.hasSuperClassCollection){
             try {
                 PhiCollection superClasses = (PhiCollection) collection.getNamed("super");
-                long numSuperClasses = superClasses.getNamed("length").longValue();
+                long numSuperClasses = superClasses.getLength().longValue();
                 for (int i = 0; i < numSuperClasses; i++) {
                     result = getUnnamedRecursive((PhiCollection) superClasses.getUnnamed(i), index);
                     if (result != null)
@@ -230,7 +230,7 @@ public class PhiCollection extends PhiObject {
         if(result == null && collection.hasSuperClassCollection){
             try {
                 PhiCollection superClasses = (PhiCollection) collection.getNamed("super");
-                long numSuperClasses = superClasses.getNamed("length").longValue();
+                long numSuperClasses = superClasses.getLength().longValue();
                 for (int i = 0; i < numSuperClasses; i++) {
                     result = getNamedRecursive((PhiCollection) superClasses.getUnnamed(i), key);
                     if (result != null)
@@ -249,7 +249,7 @@ public class PhiCollection extends PhiObject {
      * maximum of the {@code length} fields in this PhiCollection and it's superclasses.
      * @return The number of accessible unnamed members.
      */
-    private PhiInt getLength(){
+    public PhiInt getLength(){
         //Initialize with own length
         long maxLength = length;
 
@@ -257,7 +257,7 @@ public class PhiCollection extends PhiObject {
             try {
                 //check superclasses
                 PhiCollection superClasses = (PhiCollection) getNamed("super");
-                long numSuperClasses = superClasses.getNamed("length").longValue();
+                long numSuperClasses = superClasses.getLength().longValue();
 
                 for (int i = 0; i < numSuperClasses; i++) {
                     PhiObject superClass = superClasses.getUnnamed(i);
@@ -348,7 +348,7 @@ public class PhiCollection extends PhiObject {
             throw new PhiException("Member super must be a collection of collections");
 
         PhiCollection superClasses = (PhiCollection) obj;
-        long numSuperClasses = superClasses.getNamed("length").longValue();
+        long numSuperClasses = superClasses.getLength().longValue();
         for(int i = 0; i < numSuperClasses; i ++){
             Type type = superClasses.getUnnamed(i).getType();
             if(type != Type.COLLECTION && type != Type.NULL)
@@ -371,7 +371,7 @@ public class PhiCollection extends PhiObject {
     private boolean containsCycles(PhiCollection superClasses, Stack<PhiCollection> seenCollections){
         boolean result = false;
         try {
-            long numSuperClasses = superClasses.getNamed("length").longValue();
+            long numSuperClasses = superClasses.getLength().longValue();
             for (int i = 0; i < numSuperClasses; i++) {
                 PhiObject object = superClasses.getUnnamed(i);
                 if (object.getType() == Type.NULL)
@@ -420,7 +420,7 @@ public class PhiCollection extends PhiObject {
             try{
                 //check superclasses
                 PhiCollection superClasses = (PhiCollection) collection.getNamed("super");
-                long numSuperClasses = superClasses.getNamed("length").longValue();
+                long numSuperClasses = superClasses.getLength().longValue();
                 boolean result = false;
                 for(int i = 0; i < numSuperClasses; i++){
                     result = setUnnamedRecursive((PhiCollection) superClasses.getUnnamed(i), index, value);
@@ -496,7 +496,7 @@ public class PhiCollection extends PhiObject {
             try {
                 //check superclasses
                 PhiCollection superClasses = (PhiCollection) collection.getNamed("super");
-                long numSuperClasses = superClasses.getNamed("length").longValue();
+                long numSuperClasses = superClasses.getLength().longValue();
                 boolean result = false;
                 for (int i = 0; i < numSuperClasses; i++) {
                     result = setNamedRecursive((PhiCollection) superClasses.getUnnamed(i), key, value);
