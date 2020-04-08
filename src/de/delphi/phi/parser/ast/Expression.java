@@ -18,7 +18,7 @@ public abstract class Expression {
             //Bind symbol to current scope if not bound already
             if(!((PhiSymbol) obj).isBound())
                 obj = new PhiSymbol(obj.toString(), scope);
-            obj = obj.lookUp();
+            obj = ((PhiSymbol) obj).lookUp();
         }
         return obj;
     }
