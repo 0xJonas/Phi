@@ -8,11 +8,11 @@ public class PhiFunction extends PhiObject {
 
     private FunctionBody body;
 
-    private PhiScope creationScope;
+    private PhiCollection creationScope;
 
     private ParameterList parameterList;
 
-    public PhiFunction(PhiScope creationScope, ParameterList parameterList, FunctionBody body){
+    public PhiFunction(PhiCollection creationScope, ParameterList parameterList, FunctionBody body){
         this.creationScope = creationScope;
         this.parameterList = parameterList;
         this.body = body;
@@ -39,7 +39,7 @@ public class PhiFunction extends PhiObject {
         defaultValues.setNamed("super", superClasses);
 
         for(int i = 0; i < parameterList.getParameterCount(); i++){
-            String paramName =parameterList.getName(i);
+            String paramName = parameterList.getName(i);
             scope.createMember(new PhiSymbol(paramName));
             scope.setNamed(paramName, params.getUnnamed(i));
         }

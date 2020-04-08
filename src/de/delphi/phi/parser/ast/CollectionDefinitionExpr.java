@@ -28,6 +28,7 @@ public class CollectionDefinitionExpr extends Expression {
                     throw new PhiException("Name of collection member must be of type SYMBOL.");
 
                 PhiObject value = valueExpr.eval(collection);
+                value = bindAndLookUp(value, collection);
                 collection.createMember(name);
                 collection.setNamed(name.toString(), value);
             }else{
