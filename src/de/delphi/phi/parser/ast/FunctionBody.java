@@ -13,8 +13,8 @@ public class FunctionBody extends ExitableExpr {
     private Expression body;
 
     public FunctionBody(Expression body){
-        super(null);
         this.body = body;
+        body.parentExpression = this;
     }
 
     @Override

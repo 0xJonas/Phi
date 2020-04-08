@@ -9,10 +9,6 @@ public abstract class ExitableExpr extends Expression{
 
     protected PhiObject returnValue = PhiNull.NULL;
 
-    public ExitableExpr(Expression parentExpr){
-        super(parentExpr);
-    }
-
     void exit(PhiObject value){
         shouldExit = true;
         returnValue = value;

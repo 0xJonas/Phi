@@ -10,12 +10,16 @@ public class ForExpr extends ExitableExpr{
 
     private Expression init, condition, iteration, body;
 
-    public ForExpr(Expression parentExpr, Expression init, Expression condition, Expression iteration, Expression body){
-        super(parentExpr);
+    public ForExpr(Expression init, Expression condition, Expression iteration, Expression body){
         this.init = init;
         this.condition = condition;
         this.iteration = iteration;
         this.body = body;
+
+        init.parentExpression = this;
+        condition.parentExpression = this;
+        iteration.parentExpression = this;
+        body.parentExpression = this;
     }
 
     @Override

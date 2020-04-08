@@ -10,9 +10,14 @@ public class CollectionDefinitionExpr extends Expression {
 
     private ExpressionList content;
 
-    public CollectionDefinitionExpr(Expression parentExpr, ExpressionList content){
-        super(parentExpr);
+    public CollectionDefinitionExpr(ExpressionList content){
         this.content = content;
+        for(int i = 0; i < content.length(); i++){
+            content.getName(i).parentExpression = this;
+            Expression valueExpr = content.getValue(i);
+            if(valueExpr != null)
+                valueExpr.parentExpression = this;
+        }
     }
 
     @Override

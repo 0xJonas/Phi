@@ -9,9 +9,9 @@ public class ReturnExpr extends Expression {
 
     private Expression returnExpr;
 
-    public ReturnExpr(Expression parentExpr, Expression returnExpr){
-        super(parentExpr);
+    public ReturnExpr(Expression returnExpr){
         this.returnExpr = returnExpr;
+        returnExpr.parentExpression = this;
     }
 
     @Override

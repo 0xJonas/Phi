@@ -10,10 +10,12 @@ public class WhileExpr extends ExitableExpr{
 
     private Expression condition, body;
 
-    public WhileExpr(Expression parentExpr, Expression condition, Expression body){
-        super(parentExpr);
+    public WhileExpr(Expression condition, Expression body){
         this.condition = condition;
         this.body = body;
+
+        condition.parentExpression = this;
+        body.parentExpression = this;
     }
 
     @Override

@@ -18,10 +18,11 @@ public class ShiftExpr extends Expression {
 
     private Integer[] operators;
 
-    public ShiftExpr(Expression parentExpr, List<Expression> operands, List<Integer> operators){
-        super(parentExpr);
+    public ShiftExpr(List<Expression> operands, List<Integer> operators){
         this.operands = operands.toArray(new Expression[0]);
         this.operators = operators.toArray(new Integer[0]);
+        for(Expression expr: operands)
+            expr.parentExpression = this;
     }
 
     @Override

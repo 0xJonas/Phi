@@ -13,10 +13,6 @@ public abstract class Expression {
 
     protected PhiScope scope;
 
-    public Expression(Expression parentExpression){
-        this.parentExpression = parentExpression;
-    }
-
     public static PhiObject bindAndLookUp(PhiObject obj, PhiCollection scope) throws PhiException{
         if(obj.getType() == Type.SYMBOL) {
             //Bind symbol to current scope if not bound already

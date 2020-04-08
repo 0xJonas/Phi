@@ -13,9 +13,10 @@ public class AndExpr extends Expression {
 
     private Expression[] operands;
 
-    public AndExpr(Expression parentExpr, List<Expression> operands){
-        super(parentExpr);
+    public AndExpr(List<Expression> operands){
         this.operands = operands.toArray(new Expression[0]);
+        for(Expression expr: operands)
+            expr.parentExpression = this;
     }
 
     @Override

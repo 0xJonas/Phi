@@ -12,10 +12,17 @@ public class FunctionDefinitionExpr extends Expression {
 
     private FunctionBody body;
 
-    public FunctionDefinitionExpr(Expression parentExpr, ExpressionList params, FunctionBody body){
-        super(parentExpr);
+    public FunctionDefinitionExpr(ExpressionList params, FunctionBody body){
         this.params = params;
         this.body = body;
+
+        for(int i = 0; i < params.length(); i++){
+            params.getName(i).parentExpression = this;
+            Expression valueExpr = params.getValue(i);
+            if(valueExpr != null)
+                valueExpr.parentExpression = this;
+        }
+        body.parentExpression = this;
     }
 
     @Override

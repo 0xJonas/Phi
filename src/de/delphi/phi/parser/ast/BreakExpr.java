@@ -9,9 +9,9 @@ public class BreakExpr extends Expression {
 
     private Expression returnExpr;
 
-    public BreakExpr(Expression parentExpr, Expression returnExpr){
-        super(parentExpr);
+    public BreakExpr(Expression returnExpr){
         this.returnExpr = returnExpr;
+        returnExpr.parentExpression = this;
     }
 
     private boolean isLoopExpression(Expression expr){

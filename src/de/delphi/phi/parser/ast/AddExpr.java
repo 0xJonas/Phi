@@ -15,10 +15,12 @@ public class AddExpr extends Expression {
 
     private Integer[] operators;
 
-    public AddExpr(Expression parentExpr, List<Expression> operands, List<Integer> operators) {
-        super(parentExpr);
+    public AddExpr(List<Expression> operands, List<Integer> operators) {
         this.operands = operands.toArray(new Expression[0]);
         this.operators = operators.toArray(new Integer[0]);
+
+        for(Expression expr: operands)
+            expr.parentExpression = this;
     }
 
     private PhiObject add(PhiObject po1, PhiObject po2) throws PhiException{

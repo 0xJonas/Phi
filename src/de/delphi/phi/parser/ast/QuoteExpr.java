@@ -10,9 +10,9 @@ public class QuoteExpr extends Expression {
 
     private Expression body;
 
-    public QuoteExpr(Expression parentExpr, Expression body){
-        super(parentExpr);
+    public QuoteExpr(Expression body){
         this.body = body;
+        body.parentExpression = this;
     }
 
     @Override

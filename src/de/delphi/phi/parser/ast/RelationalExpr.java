@@ -22,10 +22,11 @@ public class RelationalExpr extends Expression {
 
     private Integer[] operators;
 
-    public RelationalExpr(Expression parentExpr, List<Expression> operands, List<Integer> operators){
-        super(parentExpr);
+    public RelationalExpr(List<Expression> operands, List<Integer> operators){
         this.operands = operands.toArray(new Expression[0]);
         this.operators = operators.toArray(new Integer[0]);
+        for(Expression expr: operands)
+            expr.parentExpression = this;
     }
 
     private boolean opEquals(PhiObject left, PhiObject right) throws PhiException{

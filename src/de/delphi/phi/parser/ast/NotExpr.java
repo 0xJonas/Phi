@@ -10,9 +10,9 @@ public class NotExpr extends Expression {
 
     private Expression body;
 
-    public NotExpr(Expression parentExpr, Expression body){
-        super(parentExpr);
+    public NotExpr(Expression body){
         this.body = body;
+        body.parentExpression = this;
     }
 
     @Override

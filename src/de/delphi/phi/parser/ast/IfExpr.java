@@ -10,11 +10,14 @@ public class IfExpr extends Expression{
 
     private Expression condition, trueExpr, falseExpr;
 
-    public IfExpr(Expression parentExpr, Expression condition, Expression trueExpr, Expression falseExpr){
-        super(parentExpr);
+    public IfExpr(Expression condition, Expression trueExpr, Expression falseExpr){
         this.condition = condition;
         this.trueExpr = trueExpr;
         this.falseExpr = falseExpr;
+
+        condition.parentExpression = this;
+        trueExpr.parentExpression = this;
+        falseExpr.parentExpression = this;
     }
 
     @Override

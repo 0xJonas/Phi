@@ -12,9 +12,10 @@ public class CompoundExpr extends ExitableExpr{
 
     private ArrayList<Expression> children;
 
-    public CompoundExpr(Expression parentExpr, ArrayList<Expression> children){
-        super(parentExpr);
+    public CompoundExpr(ArrayList<Expression> children){
         this.children = new ArrayList<>(children);
+        for(Expression expr: children)
+            expr.parentExpression = this;
     }
 
     public PhiObject eval(PhiCollection parentScope) throws PhiException {

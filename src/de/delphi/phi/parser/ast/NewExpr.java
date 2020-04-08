@@ -10,9 +10,9 @@ public class NewExpr extends Expression {
 
     private Expression body;
 
-    public NewExpr(Expression parentExpr, Expression body){
-        super(parentExpr);
+    public NewExpr(Expression body){
         this.body = body;
+        body.parentExpression = this;
     }
 
     @Override

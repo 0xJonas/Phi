@@ -13,9 +13,10 @@ public class XorExpr extends Expression {
 
     private Expression[] operands;
 
-    public XorExpr(Expression parentExpr, List<Expression> operands){
-        super(parentExpr);
+    public XorExpr(List<Expression> operands){
         this.operands = operands.toArray(new Expression[0]);
+        for(Expression expr: operands)
+            expr.parentExpression = this;
     }
 
     @Override

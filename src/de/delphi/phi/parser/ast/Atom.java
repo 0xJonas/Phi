@@ -7,8 +7,7 @@ public class Atom extends Expression {
 
     private PhiObject content;
 
-    public Atom(Expression parentExpr, PhiObject content){
-        super(parentExpr);
+    public Atom(PhiObject content){
         this.content = content;
     }
 
