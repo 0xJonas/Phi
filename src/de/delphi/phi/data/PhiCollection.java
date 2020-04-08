@@ -182,7 +182,7 @@ public class PhiCollection extends PhiObject {
 
         if(result == null && collection.hasSuperClassCollection){
             try {
-                PhiCollection superClasses = (PhiCollection) collection.getNamed("super");
+                PhiCollection superClasses = collection.getSuperClasses();
                 long numSuperClasses = superClasses.getLength().longValue();
                 for (int i = 0; i < numSuperClasses; i++) {
                     result = getUnnamedRecursive((PhiCollection) superClasses.getUnnamed(i), index);
@@ -229,7 +229,7 @@ public class PhiCollection extends PhiObject {
 
         if(result == null && collection.hasSuperClassCollection){
             try {
-                PhiCollection superClasses = (PhiCollection) collection.getNamed("super");
+                PhiCollection superClasses = collection.getSuperClasses();
                 long numSuperClasses = superClasses.getLength().longValue();
                 for (int i = 0; i < numSuperClasses; i++) {
                     result = getNamedRecursive((PhiCollection) superClasses.getUnnamed(i), key);
@@ -245,6 +245,23 @@ public class PhiCollection extends PhiObject {
     }
 
     /**
+     * Returns the list of superclasses for this collection. This method will create a new
+     * superclass collection if there was none before.
+     * @return The superclass collection for this collection.
+     */
+    public PhiCollection getSuperClasses(){
+        PhiObject superClasses = namedMembers.get("super");
+
+        // If this is a newly created collection, create a 'super' member.
+        if(superClasses == null) {
+            superClasses = new PhiCollection(true);
+            namedMembers.put("super", superClasses);
+            hasSuperClassCollection = true;
+        }
+        return (PhiCollection) superClasses;
+    }
+
+    /**
      * Returns the number of unnamed member that this PhiCollection can access. This is equals to the
      * maximum of the {@code length} fields in this PhiCollection and it's superclasses.
      * @return The number of accessible unnamed members.
@@ -256,7 +273,7 @@ public class PhiCollection extends PhiObject {
         if(hasSuperClassCollection){
             try {
                 //check superclasses
-                PhiCollection superClasses = (PhiCollection) getNamed("super");
+                PhiCollection superClasses = getSuperClasses();
                 long numSuperClasses = superClasses.getLength().longValue();
 
                 for (int i = 0; i < numSuperClasses; i++) {
@@ -305,17 +322,8 @@ public class PhiCollection extends PhiObject {
             return getLength();
 
         //Retrieve 'super'
-        if(key.equals("super")){
-            PhiObject superClasses = namedMembers.get("super");
-
-            // If this is a newly created collection, create a 'super' member.
-            if(superClasses == null) {
-                superClasses = new PhiCollection(true);
-                namedMembers.put("super", superClasses);
-                hasSuperClassCollection = true;
-            }
-            return superClasses;
-        }
+        if(key.equals("super"))
+            return getSuperClasses();
 
         //Retrieve any other named member
         PhiObject result = getNamedRecursive(this, key);
@@ -385,7 +393,7 @@ public class PhiCollection extends PhiObject {
                     //Mark current collection as seen
                     seenCollections.push(superClass);
 
-                    result = containsCycles((PhiCollection) superClass.getNamed("super"), seenCollections);
+                    result = containsCycles(superClass.getSuperClasses(), seenCollections);
                     seenCollections.pop();
                     if (result)
                         break;
@@ -419,7 +427,7 @@ public class PhiCollection extends PhiObject {
         else if(collection.hasSuperClassCollection){
             try{
                 //check superclasses
-                PhiCollection superClasses = (PhiCollection) collection.getNamed("super");
+                PhiCollection superClasses = collection.getSuperClasses();
                 long numSuperClasses = superClasses.getLength().longValue();
                 boolean result = false;
                 for(int i = 0; i < numSuperClasses; i++){
@@ -495,7 +503,7 @@ public class PhiCollection extends PhiObject {
         else if(collection.hasSuperClassCollection){
             try {
                 //check superclasses
-                PhiCollection superClasses = (PhiCollection) collection.getNamed("super");
+                PhiCollection superClasses = collection.getSuperClasses();
                 long numSuperClasses = superClasses.getLength().longValue();
                 boolean result = false;
                 for (int i = 0; i < numSuperClasses; i++) {
@@ -548,7 +556,7 @@ public class PhiCollection extends PhiObject {
             PhiCollection prevValue = null;
             boolean prevHasSuperClassCollection = hasSuperClassCollection;
             if(hasSuperClassCollection){
-                prevValue = (PhiCollection) getNamed("super");
+                prevValue = getSuperClasses();
             }
 
             //Perform the set
