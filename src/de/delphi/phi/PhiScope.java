@@ -8,7 +8,15 @@ public class PhiScope extends PhiCollection{
 
     private PhiCollection parentScope;
 
+    public PhiScope(){
+
+    }
+
     public PhiScope(PhiCollection parentScope){
+        setParentScope(parentScope);
+    }
+
+    public void setParentScope(PhiCollection parentScope){
         this.parentScope = parentScope;
         try {
             PhiCollection superClassList = new PhiCollection();

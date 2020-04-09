@@ -134,10 +134,10 @@ public class PhiCollection extends PhiObject {
     public void createMember(PhiObject key) throws PhiException{
         if(key.getType() == Type.INT){
             int index = (int) key.longValue();
-            if(index < length)  //Member already exists, do nothing
-                return;
             if(index < 0)
                 throw new PhiException("Index must be positive.");
+            if(index < length)  //Member already exists, do nothing
+                return;
 
             //Increase capacity if necessary
             if(index >= unnamedMembers.length){

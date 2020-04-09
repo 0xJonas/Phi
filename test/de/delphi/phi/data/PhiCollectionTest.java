@@ -100,14 +100,6 @@ public class PhiCollectionTest {
                 PhiNull.NULL,
                 mockCollection.getUnnamed(27));
 
-        assertThrows("Creating an unnamed member that already exists succeeded.", PhiException.class,
-                ()->mockCollection.createMember(new PhiInt(53))
-        );
-
-        assertThrows("Creating a named member that already exists succeeded.", PhiException.class,
-                ()->mockCollection.createMember(new PhiSymbol("foo"))
-        );
-
         assertSame(mockCollection.getUnnamed(99), PhiNull.NULL);
         assertThrows("Access to member out of bounds succeeded.", PhiException.class,
                 ()->mockCollection.getUnnamed(100)

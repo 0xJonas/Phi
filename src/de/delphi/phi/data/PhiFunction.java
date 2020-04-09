@@ -2,6 +2,7 @@ package de.delphi.phi.data;
 
 import de.delphi.phi.PhiException;
 import de.delphi.phi.PhiScope;
+import de.delphi.phi.parser.ast.Expression;
 import de.delphi.phi.parser.ast.FunctionBody;
 
 public class PhiFunction extends PhiObject {
@@ -29,26 +30,12 @@ public class PhiFunction extends PhiObject {
     }
 
     public PhiObject call(PhiCollection params) throws PhiException {
-        PhiCollection defaultValues = parameterList.getDefaultValues();
-        PhiScope scope = new PhiScope(defaultValues);
+        PhiScope scope = parameterList.supplyParameters(params);
+        scope.setParentScope(creationScope);
 
-        PhiCollection superClasses = new PhiCollection();
-        superClasses.createMember(new PhiInt(0));
-        superClasses.setUnnamed(0, creationScope);
-        defaultValues.setNamed("super", superClasses);
-
-        for(int i = 0; i < parameterList.getParameterCount(); i++){
-            String paramName = parameterList.getName(i);
-            scope.createMember(new PhiSymbol(paramName));
-            scope.setNamed(paramName, params.getUnnamed(i));
-        }
-
-        for(String name: params.memberNames()){
-            if(parameterList.contains(name))
-                scope.setNamed(name, params.getNamed(name));
-        }
-
-        return body.eval(scope);
+        PhiObject result = body.eval(scope);
+        result = Expression.bindAndLookUp(result, scope);
+        return result;
     }
 
     @Override

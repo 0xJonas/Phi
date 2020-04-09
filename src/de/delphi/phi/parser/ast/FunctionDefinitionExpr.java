@@ -30,7 +30,7 @@ public class FunctionDefinitionExpr extends Expression {
         scope = new PhiScope(parentScope);
 
         ArrayList<String> names = new ArrayList<>();
-        PhiCollection defaultValues = new PhiCollection();
+        PhiScope defaultValues = new PhiScope();
         for(int i = 0; i < params.length(); i++){
             PhiObject name = params.getName(i).eval(scope);
             if(name.getType() != Type.SYMBOL)
