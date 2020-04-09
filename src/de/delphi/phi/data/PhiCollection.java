@@ -128,17 +128,14 @@ public class PhiCollection extends PhiObject {
      * If key is a PhiInt, this method creates an unnamed member. If key is a PhiSymbol,
      * a named member is created. Other PhiObjects cause a PhiRuntimeException to be thrown.
      *
-     * This method returns a PhiSymbol representing the newly created member. This PhiSymbol is bound to
-     * this PhiCollection and can therefore be used to assign a value to the new member.
      * @param key the key of the new member.
-     * @throws PhiException If key is neither a {@code PhiInt} or {@code PhiSymbol} or if there already exists
-     * a member with the given key.
+     * @throws PhiException If key is neither a {@code PhiInt} or {@code PhiSymbol}.
      */
     public void createMember(PhiObject key) throws PhiException{
         if(key.getType() == Type.INT){
             int index = (int) key.longValue();
-            if(index < length)
-                throw new PhiException("Index " + index + " already exists.");
+            if(index < length)  //Member already exists, do nothing
+                return;
             if(index < 0)
                 throw new PhiException("Index must be positive.");
 
@@ -155,10 +152,11 @@ public class PhiCollection extends PhiObject {
         }
         else if(key.getType() == Type.SYMBOL){
             String symbolName = key.toString();
+            if(symbolName.equals("this") || symbolName.equals("length") || symbolName.equals("super"))
+                throw new PhiException("Cannot create reserved symbol " + symbolName);
+
             if(!namedMembers.containsKey(symbolName)){
                 namedMembers.put(symbolName, PhiNull.NULL);
-            }else{
-                throw new PhiException("Member " + symbolName + " already exists.");
             }
         }
         else {
