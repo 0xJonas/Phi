@@ -60,10 +60,11 @@ public class ParameterList {
         //Set with named values
         for(String name: params.memberNames()){
             int index = indexOf(name);
-            if(index > 0) {
+            if(index >= 0) {
                 values.setNamed(name, params.getNamed(name));
                 valueSupplied[index] = true;
-            }
+            }else
+                throw new PhiException("Parameter " + name + " does not exist.");
         }
 
         for(int i = 0; i < names.length; i++){
