@@ -25,14 +25,12 @@ public class SubscriptExpr extends Expression {
 
         PhiObject collection = collectionExpr.eval(scope);
         collection = bindAndLookUp(collection, parentScope);
-        if(collection.getType() != Type.COLLECTION)
-            throw new PhiException(collection.getType() + " is not subscriptable.");
 
         PhiObject index = indexExpr.eval(scope);
         index = bindAndLookUp(index, scope);
         if(index.getType() != Type.INT)
             throw new PhiException("Subscript must be of type INT.");
 
-        return new PhiUnnamedSymbol((int) index.longValue(), (PhiCollection) collection);
+        return new PhiUnnamedSymbol((int) index.longValue(), collection);
     }
 }

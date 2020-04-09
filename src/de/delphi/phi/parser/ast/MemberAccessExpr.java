@@ -25,13 +25,11 @@ public class MemberAccessExpr extends Expression {
 
         PhiObject collection = collectionExpr.eval(scope);
         collection = bindAndLookUp(collection, parentScope);
-        if(collection.getType() != Type.COLLECTION)
-            throw new PhiException(collection.getType() + " does not contain members.");
 
         PhiObject name = nameExpr.eval(scope);
         if(name.getType() != Type.SYMBOL)
             throw new PhiException("Member name must be of type SYMBOL.");
 
-        return new PhiSymbol(name.toString(), (PhiCollection) collection);
+        return new PhiSymbol(name.toString(), collection);
     }
 }
