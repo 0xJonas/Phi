@@ -61,8 +61,10 @@ public class MulExpr extends Expression {
     @Override
     public PhiObject eval(PhiCollection parentScope) throws PhiException {
         scope = new PhiScope(parentScope);
-        PhiObject result = PhiInt.TRUE; // = 1
-        for(int i = 0; i < operands.length; i++){
+        PhiObject result = operands[0].eval(scope);
+        result = bindAndLookUp(result, scope);
+
+        for(int i = 1; i < operands.length; i++){
             PhiObject po2 = operands[i].eval(scope);
 
             po2 = bindAndLookUp(po2, scope);
