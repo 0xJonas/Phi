@@ -10,7 +10,8 @@ public class PhiCollectionTest {
 
     private PhiCollection a, b, c, d;
 
-    private PhiCollection aSuper, bSuper, cSuper;
+    private PhiCollection aSuper;
+    private PhiCollection bSuper;
 
     private void setupInheritanceStructure() throws PhiException{
         /*
@@ -30,7 +31,7 @@ public class PhiCollectionTest {
         d = new PhiCollection();
         aSuper = new PhiCollection();
         bSuper = new PhiCollection();
-        cSuper = new PhiCollection();
+        PhiCollection cSuper = new PhiCollection();
 
         //Setup inheritance
         aSuper.createMember(new PhiInt(1));
@@ -246,10 +247,8 @@ public class PhiCollectionTest {
         PhiCollection copy2 = (PhiCollection) a.clone();
         assertEquals(copy2.getUnnamed(1).longValue(), d.getUnnamed(1).longValue());
         assertNotSame(copy2.getUnnamed(1), d.getUnnamed(1));
-        assertEquals(((PhiCollection)
-                        ((PhiCollection) copy2.getNamed("super")).getUnnamed(0)
-                    ).getUnnamed(0).longValue(),
+        assertEquals(copy2.getSuperClasses().getUnnamed(0).getUnnamed(0).longValue(),
                 b.getUnnamed(0).longValue());
-        assertNotSame(((PhiCollection) copy2.getNamed("super")).getUnnamed(0), b);
+        assertNotSame(copy2.getSuperClasses().getUnnamed(0), b);
     }
 }
