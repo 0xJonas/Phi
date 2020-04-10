@@ -1,5 +1,6 @@
 package de.delphi.phi.data;
 
+import de.delphi.phi.PhiArgumentException;
 import de.delphi.phi.PhiException;
 import de.delphi.phi.PhiScope;
 
@@ -42,7 +43,7 @@ public class ParameterList {
 
     public PhiScope supplyParameters(PhiCollection params) throws PhiException {
         if(params.getLength().longValue() > names.length)
-            throw new PhiException("Too many parameters.");
+            throw new PhiArgumentException("Too many parameters.");
 
         boolean[] valueSupplied = availableValues.clone();
         PhiScope values = getDefaultValues();
@@ -64,12 +65,12 @@ public class ParameterList {
                 values.setNamed(name, params.getNamed(name));
                 valueSupplied[index] = true;
             }else
-                throw new PhiException("Parameter " + name + " does not exist.");
+                throw new PhiArgumentException("Parameter " + name + " does not exist.");
         }
 
         for(int i = 0; i < names.length; i++){
             if(!valueSupplied[i])
-                throw new PhiException("Missing value for parameter " + names[i]);
+                throw new PhiArgumentException("Missing value for parameter " + names[i]);
         }
 
         return values;
