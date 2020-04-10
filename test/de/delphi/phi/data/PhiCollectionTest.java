@@ -1,6 +1,9 @@
 package de.delphi.phi.data;
 
+import de.delphi.phi.PhiAccessException;
 import de.delphi.phi.PhiException;
+import de.delphi.phi.PhiStructureException;
+import de.delphi.phi.PhiTypeException;
 import org.junit.Test;
 
 import static de.delphi.phi.Polyfill.assertThrows;
@@ -79,10 +82,10 @@ public class PhiCollectionTest {
     public void testCreateMember() throws PhiException{
         PhiCollection mockCollection = new PhiCollection();
 
-        assertThrows("Creating a member with a key of invalid type succeeded.", PhiException.class,
+        assertThrows("Creating a member with a key of invalid type succeeded.", PhiTypeException.class,
                 ()->mockCollection.createMember(new PhiFloat(1.0))
         );
-        assertThrows("Creating a member with negative index succeeded.", PhiException.class,
+        assertThrows("Creating a member with negative index succeeded.", PhiAccessException.class,
                 ()->mockCollection.createMember(new PhiInt(-1))
         );
 
@@ -102,7 +105,7 @@ public class PhiCollectionTest {
                 mockCollection.getUnnamed(27));
 
         assertSame(mockCollection.getUnnamed(99), PhiNull.NULL);
-        assertThrows("Access to member out of bounds succeeded.", PhiException.class,
+        assertThrows("Access to member out of bounds succeeded.", PhiAccessException.class,
                 ()->mockCollection.getUnnamed(100)
         );
     }
@@ -118,16 +121,16 @@ public class PhiCollectionTest {
         assertEquals("Could not retrieve unnamed member.",16, mockCollection.getUnnamed(0).longValue());
         assertEquals("Could not retrieve unnamed member.","test", mockCollection.getUnnamed(1).toString());
 
-        assertThrows("Setting nonexistent unnamed member succeeded.", PhiException.class,
+        assertThrows("Setting nonexistent unnamed member succeeded.", PhiAccessException.class,
                 ()->mockCollection.setUnnamed(500, new PhiInt(1))
         );
-        assertThrows("Retrieving nonexistent unnamed member succeeded.", PhiException.class,
+        assertThrows("Retrieving nonexistent unnamed member succeeded.", PhiAccessException.class,
                 ()->mockCollection.getUnnamed(500)
         );
-        assertThrows("Setting member with negative index succeeded.", PhiException.class,
+        assertThrows("Setting member with negative index succeeded.", PhiAccessException.class,
                 ()->mockCollection.setUnnamed(-1, new PhiInt(1))
         );
-        assertThrows("Retrieving member with negative index succeeded.", PhiException.class,
+        assertThrows("Retrieving member with negative index succeeded.", PhiAccessException.class,
                 ()->mockCollection.getUnnamed(-1)
         );
 
@@ -144,11 +147,11 @@ public class PhiCollectionTest {
         assertEquals(38, c.getUnnamed(1).longValue());  //Should be the only one that changed
         assertEquals(-1, d.getUnnamed(1).longValue());
 
-        assertThrows("Adding non-collection to superclass list succeeded.", PhiException.class,
+        assertThrows("Adding non-collection to superclass list succeeded.", PhiStructureException.class,
                 ()->aSuper.setUnnamed(0, new PhiInt(100))
         );
 
-        assertThrows("Creating circular inheritance succeeded.", PhiException.class,
+        assertThrows("Creating circular inheritance succeeded.", PhiStructureException.class,
                 ()->bSuper.setUnnamed(0, a)
         );
         assertSame("State got not rolled back correctly.", d, bSuper.getUnnamed(0));
@@ -167,10 +170,10 @@ public class PhiCollectionTest {
         assertEquals("Could not retrieve named member.", 16, mockCollection.getNamed("foo").longValue());
         assertEquals("Could not retrieve named member.", "test", mockCollection.getNamed("bar").toString());
 
-        assertThrows("Setting nonexistent named member succeeded.", PhiException.class,
+        assertThrows("Setting nonexistent named member succeeded.", PhiAccessException.class,
                 ()->mockCollection.setNamed("fail", new PhiInt(1))
         );
-        assertThrows("Retrieving nonexistent named member succeeded.", PhiException.class,
+        assertThrows("Retrieving nonexistent named member succeeded.", PhiAccessException.class,
                 ()->mockCollection.getNamed("fail")
         );
 
@@ -181,7 +184,7 @@ public class PhiCollectionTest {
         assertEquals("y", c.getNamed("test2").toString());
         assertEquals("y", d.getNamed("test2").toString());
 
-        assertThrows("Creating circular inheritance succeeded.", PhiException.class,
+        assertThrows("Creating circular inheritance succeeded.", PhiStructureException.class,
                 ()->b.setNamed("super", aSuper)
         );
         assertSame("State got not rolled back correctly.", bSuper, b.getNamed("super"));
@@ -193,10 +196,10 @@ public class PhiCollectionTest {
         assertEquals("length is not 0 after instantiation.", 0, mockCollection.getNamed("length").longValue());
         assertEquals("'this' is not actually this.", mockCollection, mockCollection.getNamed("this"));
 
-        assertThrows("Assignment to read-only member 'length' succeeded.", PhiException.class,
+        assertThrows("Assignment to read-only member 'length' succeeded.", PhiAccessException.class,
                 ()->mockCollection.setNamed("length", new PhiInt(1))
         );
-        assertThrows("Assignment to read-only member 'this' succeeded.", PhiException.class,
+        assertThrows("Assignment to read-only member 'this' succeeded.", PhiAccessException.class,
                 ()->mockCollection.setNamed("this", new PhiInt(1))
         );
 

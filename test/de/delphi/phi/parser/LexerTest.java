@@ -1,20 +1,18 @@
 package de.delphi.phi.parser;
 
-import de.delphi.phi.PhiException;
+import de.delphi.phi.PhiRuntimeException;
+import de.delphi.phi.PhiSyntaxException;
 import org.junit.Test;
 
 import java.io.IOException;
 import java.io.StringReader;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 public class LexerTest {
 
-    private static final double EPSILON = 0.000000000001;
-
     @Test
-    public void testReservedWords() throws IOException {
+    public void testReservedWords() throws IOException, PhiSyntaxException {
         String input = "if then else while do for break continue return var function lambda new true false null";
         Lexer lexer = new Lexer();
         lexer.setInput(new StringReader(input));
@@ -39,7 +37,7 @@ public class LexerTest {
     }
 
     @Test
-    public void testOperators() throws IOException {
+    public void testOperators() throws IOException, PhiSyntaxException {
         String input = "+ - * / % & | ^ ! << >> = == += -= *= /= %= &= |= ^= != <<= >>= < > <= >= -> , . ' ;";
         Lexer lexer = new Lexer();
         lexer.setInput(new StringReader(input));
@@ -81,7 +79,7 @@ public class LexerTest {
     }
 
     @Test
-    public void testComments() throws IOException {
+    public void testComments() throws IOException, PhiSyntaxException {
         String input = "abc /*a comment*/ def //line comment \nghi /*\n*/test";
         Lexer lexer = new Lexer();
         lexer.setInput(new StringReader(input));
@@ -93,7 +91,7 @@ public class LexerTest {
     }
 
     @Test
-    public void testParentheses() throws IOException {
+    public void testParentheses() throws IOException, PhiSyntaxException {
         String input = "()[]{}";
         Lexer lexer = new Lexer();
         lexer.setInput(new StringReader(input));
@@ -107,12 +105,8 @@ public class LexerTest {
         assertEquals(new Token(Tag.EOI, "", 0 ,6), lexer.nextToken());
     }
 
-    private void floatEquals(double expected, double actual){
-        assertTrue(Math.abs(actual - expected) < EPSILON);
-    }
-
     @Test
-    public void testLiterals() throws IOException, PhiException {
+    public void testLiterals() throws IOException, PhiRuntimeException, PhiSyntaxException {
         String input = "\"hello \\\"world\\\"\" 123 0x1f3 0107 0b101011 1.23 .0 1. 5.5e2 200e-2  0xa.b 0x0.1p2 0b10.01 0b10.01e-11";
         Lexer lexer = new Lexer();
         lexer.setInput(new StringReader(input));
@@ -122,20 +116,20 @@ public class LexerTest {
         assertEquals(0x1f3, ((Literal) lexer.nextToken()).content.longValue());
         assertEquals(0107, ((Literal) lexer.nextToken()).content.longValue());
         assertEquals(0b101011, ((Literal) lexer.nextToken()).content.longValue());
-        floatEquals(1.23, ((Literal) lexer.nextToken()).content.doubleValue());
-        floatEquals(0.0, ((Literal) lexer.nextToken()).content.doubleValue());
-        floatEquals(1.0, ((Literal) lexer.nextToken()).content.doubleValue());
-        floatEquals(5.5e2, ((Literal) lexer.nextToken()).content.doubleValue());
-        floatEquals(200e-2, ((Literal) lexer.nextToken()).content.doubleValue());
-        floatEquals(0xa.bp0, ((Literal) lexer.nextToken()).content.doubleValue());
-        floatEquals(0x0.1p2, ((Literal) lexer.nextToken()).content.doubleValue());
+        assertEquals(1.23, ((Literal) lexer.nextToken()).content.doubleValue(), 1e-9);
+        assertEquals(0.0, ((Literal) lexer.nextToken()).content.doubleValue(), 1e-9);
+        assertEquals(1.0, ((Literal) lexer.nextToken()).content.doubleValue(), 1e-9);
+        assertEquals(5.5e2, ((Literal) lexer.nextToken()).content.doubleValue(), 1e-9);
+        assertEquals(200e-2, ((Literal) lexer.nextToken()).content.doubleValue(), 1e-9);
+        assertEquals(0xa.bp0, ((Literal) lexer.nextToken()).content.doubleValue(), 1e-9);
+        assertEquals(0x0.1p2, ((Literal) lexer.nextToken()).content.doubleValue(), 1e-9);
 
         //TODO float literals in different bases
         //floatEquals(2.25, ((Literal) lexer.nextToken()).content.doubleValue());
     }
 
     @Test
-    public void testProgram1() throws IOException {
+    public void testProgram1() throws IOException, PhiSyntaxException {
         String input = "function min(list)\n" +
                 "    for var i = 0, min = 1000000;\n" +
                 "        i < list.length;\n" +

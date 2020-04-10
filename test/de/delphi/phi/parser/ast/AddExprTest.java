@@ -1,7 +1,8 @@
 package de.delphi.phi.parser.ast;
 
-import de.delphi.phi.PhiException;
+import de.delphi.phi.PhiRuntimeException;
 import de.delphi.phi.PhiScope;
+import de.delphi.phi.PhiTypeException;
 import de.delphi.phi.data.*;
 import org.junit.Test;
 
@@ -12,7 +13,7 @@ import static org.junit.Assert.assertEquals;
 
 public class AddExprTest {
 
-    private PhiScope createScope() throws PhiException {
+    private PhiScope createScope() throws PhiRuntimeException {
         PhiScope scope = new PhiScope();
         scope.createMember(new PhiSymbol("a"));
         scope.createMember(new PhiSymbol(".a"));
@@ -24,7 +25,7 @@ public class AddExprTest {
     }
 
     @Test
-    public void testIntAdd() throws PhiException{
+    public void testIntAdd() throws PhiRuntimeException{
         AddExpr expr = new AddExpr(
                 List.of(
                         new Atom(new PhiSymbol("a")),
@@ -38,7 +39,7 @@ public class AddExprTest {
     }
 
     @Test
-    public void testFloatAdd() throws PhiException{
+    public void testFloatAdd() throws PhiRuntimeException{
         AddExpr expr = new AddExpr(
                 List.of(
                         new Atom(new PhiSymbol("a")),
@@ -52,7 +53,7 @@ public class AddExprTest {
     }
 
     @Test
-    public void testStringConcat() throws PhiException{
+    public void testStringConcat() throws PhiRuntimeException{
         AddExpr expr1 = new AddExpr(
                 List.of(
                         new Atom(new PhiString("a")),
@@ -68,13 +69,13 @@ public class AddExprTest {
                         new Atom(new PhiString("a")),
                         new Atom(new PhiString("b"))),
                 List.of(AddExpr.OP_ADD, AddExpr.OP_SUB));
-        assertThrows("Subtracting strings succeeded", PhiException.class,
+        assertThrows("Subtracting strings succeeded", PhiTypeException.class,
                 ()->expr2.eval(scope)
         );
     }
 
     @Test
-    public void testSymbolConcat() throws PhiException{
+    public void testSymbolConcat() throws PhiRuntimeException{
         AddExpr expr1 = new AddExpr(
                 List.of(
                         new Atom(new PhiSymbol(".a")),
@@ -90,13 +91,13 @@ public class AddExprTest {
                         new Atom(new PhiSymbol(".a")),
                         new Atom(new PhiSymbol(".b"))),
                 List.of(AddExpr.OP_ADD, AddExpr.OP_SUB));
-        assertThrows("Subtracting symbols succeeded", PhiException.class,
+        assertThrows("Subtracting symbols succeeded", PhiTypeException.class,
                 ()->expr2.eval(scope)
         );
     }
 
     @Test
-    public void testReturnThrough() throws PhiException{
+    public void testReturnThrough() throws PhiRuntimeException{
         WhileExpr expr = new WhileExpr(new Atom(PhiInt.TRUE),
                 new AddExpr(
                         List.of(

@@ -1,6 +1,7 @@
 package de.delphi.phi.data;
 
-import de.delphi.phi.PhiException;
+import de.delphi.phi.PhiArgumentException;
+import de.delphi.phi.PhiRuntimeException;
 import de.delphi.phi.PhiScope;
 import de.delphi.phi.parser.ast.AddExpr;
 import de.delphi.phi.parser.ast.Atom;
@@ -27,7 +28,7 @@ public class PhiFunctionTest {
         return new PhiFunction(new PhiCollection(), paramList, body);
     }
 
-    private PhiFunction createFunctionWithDefaults() throws PhiException{
+    private PhiFunction createFunctionWithDefaults() throws PhiRuntimeException{
         //lambda(a, b = 10) -> a % b
         PhiScope defaults = new PhiScope();
         defaults.createMember(new PhiSymbol("b"));
@@ -43,11 +44,11 @@ public class PhiFunctionTest {
         return new PhiFunction(new PhiCollection(), paramList, body);
     }
 
-    private PhiCollection createParameters(int... unnamed) throws PhiException {
+    private PhiCollection createParameters(int... unnamed) throws PhiRuntimeException {
         return createParameters(new String[0], new int[0], unnamed);
     }
 
-    private PhiCollection createParameters(String[] names, int[] values, int... unnamed) throws PhiException{
+    private PhiCollection createParameters(String[] names, int[] values, int... unnamed) throws PhiRuntimeException{
         PhiCollection paramCollection = new PhiCollection();
 
         for(int i = 0; i < names.length; i++){
@@ -65,33 +66,33 @@ public class PhiFunctionTest {
     }
 
     @Test
-    public void testUnnamedParams() throws PhiException {
+    public void testUnnamedParams() throws PhiRuntimeException {
         PhiFunction func = createFunction();
 
         assertEquals(1, func.call(createParameters(3, 2)).longValue());
-        assertThrows("Call with too few parameters succeeded.", PhiException.class,
+        assertThrows("Call with too few parameters succeeded.", PhiArgumentException.class,
                 ()->func.call(createParameters(2))
         );
-        assertThrows("Call with too many parameters succeeded.", PhiException.class,
+        assertThrows("Call with too many parameters succeeded.", PhiArgumentException.class,
                 ()->func.call(createParameters(2, 3, 4))
         );
     }
 
     @Test
-    public void testNamedParams() throws PhiException {
+    public void testNamedParams() throws PhiRuntimeException {
         PhiFunction func = createFunction();
         assertEquals("Named parameters did not get interpreted correctly",
                 1, func.call(createParameters(new String[]{"b", "a"}, new int[]{2, 3})).longValue());
         assertEquals("Named parameters did not override unnamed parameters correctly",
                 2, func.call(createParameters(new String[]{"b", "a"}, new int[]{4, 6}, 4)).longValue());
 
-        assertThrows("Supplying nonexistent parameter succeeded.", PhiException.class,
+        assertThrows("Supplying nonexistent parameter succeeded.", PhiArgumentException.class,
                 ()->func.call(createParameters(new String[]{"b", "a", "c"}, new int[]{2, 3, 4}))
         );
     }
 
     @Test
-    public void testDefaultValues() throws PhiException {
+    public void testDefaultValues() throws PhiRuntimeException {
         PhiFunction func = createFunctionWithDefaults();
         assertEquals("Function does not work.", 5, func.call(createParameters(11, 6)).longValue());
         assertEquals("Default value is not used.", 1, func.call(createParameters(11)).longValue());
