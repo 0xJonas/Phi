@@ -1,33 +1,34 @@
 package de.delphi.phi.data;
 
-import de.delphi.phi.PhiException;
+import de.delphi.phi.PhiRuntimeException;
+import de.delphi.phi.PhiTypeException;
 
 public abstract class PhiObject implements Cloneable{
 
     public abstract Type getType();
 
-    public long longValue() throws PhiException{
-        throw new PhiException("Cannot interpret " + getType().toString() + " as INT.");
+    public long longValue() throws PhiRuntimeException {
+        throw new PhiTypeException("Cannot interpret " + getType().toString() + " as INT.");
     }
 
-    public double doubleValue() throws PhiException{
-        throw new PhiException("Cannot interpret " + getType().toString() + " as FLOAT.");
+    public double doubleValue() throws PhiRuntimeException {
+        throw new PhiTypeException("Cannot interpret " + getType().toString() + " as FLOAT.");
     }
 
-    public PhiObject getUnnamed(int index) throws PhiException{
-        throw new PhiException("Cannot get members from " + getType().toString() + ".");
+    public PhiObject getUnnamed(int index) throws PhiRuntimeException{
+        throw new PhiTypeException("Cannot get members from " + getType().toString() + ".");
     }
 
-    public PhiObject getNamed(String key) throws PhiException{
-        throw new PhiException("Cannot get members from " + getType().toString() + ".");
+    public PhiObject getNamed(String key) throws PhiRuntimeException{
+        throw new PhiTypeException("Cannot get members from " + getType().toString() + ".");
     }
 
-    public void setUnnamed(int index, PhiObject value) throws PhiException{
-        throw new PhiException("Cannot set members on " + getType().toString() + ".");
+    public void setUnnamed(int index, PhiObject value) throws PhiRuntimeException{
+        throw new PhiTypeException("Cannot set members on " + getType().toString() + ".");
     }
 
-    public void setNamed(String key, PhiObject value) throws PhiException{
-        throw new PhiException("Cannot set members on " + getType().toString() + ".");
+    public void setNamed(String key, PhiObject value) throws PhiRuntimeException{
+        throw new PhiTypeException("Cannot set members on " + getType().toString() + ".");
     }
 
     @Override

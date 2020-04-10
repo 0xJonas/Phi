@@ -1,6 +1,10 @@
 package de.delphi.phi.data;
 
-import de.delphi.phi.PhiException;
+import de.delphi.phi.PhiAccessException;
+import de.delphi.phi.PhiRuntimeException;
+import de.delphi.phi.PhiStructureException;
+import de.delphi.phi.PhiTypeException;
+import de.delphi.phi.parser.PhiInternalException;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -129,13 +133,20 @@ public class PhiCollection extends PhiObject {
      * a named member is created. Other PhiObjects cause a PhiRuntimeException to be thrown.
      *
      * @param key the key of the new member.
-     * @throws PhiException If key is neither a {@code PhiInt} or {@code PhiSymbol}.
+     * @throws PhiAccessException If the index of an unnamed symbol is negative or a named symbol is reserved.
+     * @throws PhiTypeException If key is neither a {@code PhiInt} or {@code PhiSymbol}.
      */
-    public void createMember(PhiObject key) throws PhiException{
+    public void createMember(PhiObject key) throws PhiAccessException, PhiTypeException {
         if(key.getType() == Type.INT){
-            int index = (int) key.longValue();
+            int index;
+            try {
+                index = (int) key.longValue();
+            }catch(PhiRuntimeException e){
+                throw new PhiInternalException(e);
+            }
+
             if(index < 0)
-                throw new PhiException("Index must be positive.");
+                throw new PhiAccessException("Index must be positive.");
             if(index < length)  //Member already exists, do nothing
                 return;
 
@@ -153,14 +164,14 @@ public class PhiCollection extends PhiObject {
         else if(key.getType() == Type.SYMBOL){
             String symbolName = key.toString();
             if(symbolName.equals("this") || symbolName.equals("length") || symbolName.equals("super"))
-                throw new PhiException("Cannot create reserved symbol " + symbolName);
+                throw new PhiAccessException("Cannot create reserved symbol " + symbolName);
 
             if(!namedMembers.containsKey(symbolName)){
                 namedMembers.put(symbolName, PhiNull.NULL);
             }
         }
         else {
-            throw new PhiException("Key must be of type INT or SYMBOL");
+            throw new PhiTypeException("Key must be of type INT or SYMBOL");
         }
     }
 
@@ -187,8 +198,8 @@ public class PhiCollection extends PhiObject {
                     if (result != null)
                         break;
                 }
-            }catch(PhiException e){
-                e.printStackTrace();
+            }catch(PhiAccessException e){
+                throw new PhiInternalException(e);
             }
         }
 
@@ -197,19 +208,18 @@ public class PhiCollection extends PhiObject {
 
     /**
      * Retrieves an unnamed members from this collection.
-     * @param index The index of the requested unnamed member. If this is out of bounds, a {@code PhiRuntimeException}
-     *              is thrown.
+     * @param index The index of the requested unnamed member.
      * @return The unnamed member at the given index.
-     * @throws PhiException If index is out of bounds.
+     * @throws PhiAccessException If index is out of bounds.
      */
     @Override
-    public PhiObject getUnnamed(int index) throws PhiException{
+    public PhiObject getUnnamed(int index) throws PhiAccessException{
         if(index < 0)
-            throw new PhiException("Index must be positive.");
+            throw new PhiAccessException("Index must be positive.");
 
         PhiObject result = getUnnamedRecursive(this, index);
         if(result == null)
-            throw new PhiException("Index " + index + " is out of bounds: length is " + length + ".");
+            throw new PhiAccessException("Index " + index + " is out of bounds: length is " + length + ".");
         else
             return result;
     }
@@ -234,8 +244,8 @@ public class PhiCollection extends PhiObject {
                     if (result != null)
                         break;
                 }
-            }catch(PhiException e){
-                e.printStackTrace();
+            }catch(PhiAccessException e){
+                throw new PhiInternalException(e);
             }
         }
 
@@ -282,8 +292,8 @@ public class PhiCollection extends PhiObject {
                         maxLength = Math.max(maxLength, superLength);
                     }
                 }
-            }catch(PhiException e){
-                e.printStackTrace();
+            }catch(PhiAccessException e){
+                throw new PhiInternalException(e);
             }
         }
         return new PhiInt(maxLength);
@@ -307,10 +317,10 @@ public class PhiCollection extends PhiObject {
      * an infinite recursion. Instead, the member is created when it is first accessed.
      * @param key The name of the requested member.
      * @return The member with the given name.
-     * @throws PhiException If the collection does not contain a member with the given name.
+     * @throws PhiAccessException If the collection does not contain a member with the given name.
      */
     @Override
-    public PhiObject getNamed(String key) throws PhiException{
+    public PhiObject getNamed(String key) throws PhiAccessException{
         //Retrieve 'this'
         if(key.equals("this"))
             return this;
@@ -329,7 +339,7 @@ public class PhiCollection extends PhiObject {
             if(parentScope != null)
                 return parentScope.getNamed(key);
             else
-                throw new PhiException(key + " is not a member of this collection.");
+                throw new PhiAccessException(key + " is not a member of this collection.");
         } else
             return result;
     }
@@ -347,18 +357,22 @@ public class PhiCollection extends PhiObject {
      * This means that the PhiObject is a collection that contains only other collections or NULL values.
      * If the given PhiObject does not fulfill this requirement, a {@code PhiRuntimeException} is thrown.
      * @param obj The PhiObject to be checked.
-     * @throws PhiException If the given PhiObject does not have a sufficient type.
+     * @throws PhiStructureException If the given PhiObject is not a PhiCollection of PhiCollections.
      */
-    private void validateTypes(PhiObject obj) throws PhiException{
+    private void validateTypes(PhiObject obj) throws PhiStructureException{
         if(obj.getType() != Type.COLLECTION)
-            throw new PhiException("Member super must be a collection of collections");
+            throw new PhiStructureException("Member super must be a collection of collections");
 
         PhiCollection superClasses = (PhiCollection) obj;
         long numSuperClasses = superClasses.getLength().longValue();
         for(int i = 0; i < numSuperClasses; i ++){
-            Type type = superClasses.getUnnamed(i).getType();
-            if(type != Type.COLLECTION && type != Type.NULL)
-                throw new PhiException("Member super must be a collection of collections");
+            try {
+                Type type = superClasses.getUnnamed(i).getType();
+                if (type != Type.COLLECTION && type != Type.NULL)
+                    throw new PhiStructureException("Member super must be a collection of collections");
+            }catch(PhiAccessException e){
+                throw new PhiInternalException(e);
+            }
         }
     }
 
@@ -397,8 +411,8 @@ public class PhiCollection extends PhiObject {
                         break;
                 }
             }
-        }catch(PhiException e){
-            e.printStackTrace();
+        }catch(PhiAccessException e){
+            throw new PhiInternalException(e);
         }
         return result;
     }
@@ -436,9 +450,8 @@ public class PhiCollection extends PhiObject {
                         break;
                 }
                 return result;
-            }catch(PhiException e){
-                e.printStackTrace();
-                return false;
+            }catch(PhiAccessException e){
+                throw new PhiInternalException(e);
             }
         }
         else
@@ -452,21 +465,22 @@ public class PhiCollection extends PhiObject {
      * given value.
      * @param index The index of the unnamed member.
      * @param value The new value of the unnamed member.
-     * @throws PhiException If no unnamed member with the given index is found in the collection hierarchy.
+     * @throws PhiAccessException If no unnamed member with the given index is found in the collection hierarchy.
+     * @throws PhiStructureException If the set would create a circular inheritance in the underlying collection structure.
      */
     @Override
-    public void setUnnamed(int index, PhiObject value) throws PhiException{
+    public void setUnnamed(int index, PhiObject value) throws PhiAccessException, PhiStructureException{
         if (index < 0)
-            throw new PhiException("Index must be positive.");
+            throw new PhiAccessException("Index must be positive.");
 
         if (isSuperClassCollectionOf > 0 && value.getType() != Type.COLLECTION)
-            throw new PhiException("Member of a super class collection must be a collection.");
+            throw new PhiStructureException("Member of a super class collection must be a collection.");
 
         PhiObject prevValue = getUnnamed(index);
 
         boolean success = setUnnamedRecursive(this, index, value);
         if (!success)
-            throw new PhiException("Index " + index + " is out of bounds: length is " + length + ".");
+            throw new PhiAccessException("Index " + index + " is out of bounds: length is " + length + ".");
 
         //If this collection is a super class collection, do additional checks to prevent circular inheritance
         if (isSuperClassCollectionOf > 0) {
@@ -474,7 +488,7 @@ public class PhiCollection extends PhiObject {
             if (invalid) {
                 //Roll back the change
                 setUnnamedRecursive(this, index, prevValue);
-                throw new PhiException("Collection can not be it's own super class.");
+                throw new PhiStructureException("Collection can not be it's own super class.");
             }
         }
     }
@@ -512,9 +526,8 @@ public class PhiCollection extends PhiObject {
                         break;
                 }
                 return result;
-            }catch(PhiException e){
-                e.printStackTrace();
-                return false;
+            }catch(PhiAccessException e){
+                throw new PhiInternalException(e);
             }
         }else
             return false;
@@ -539,13 +552,14 @@ public class PhiCollection extends PhiObject {
      * </ul>
      * @param key The name of the member.
      * @param value The new value of the named member.
-     * @throws PhiException If no named member with the given name is found in the collection hierarchy, if
+     * @throws PhiAccessException If no named member with the given name is found in the collection hierarchy, if
      * a set to a read-only member was attempted or if bad value for the {@code super} member was set.
+     * @throws PhiStructureException If the set would create a circular inheritance in the underlying collection structure.
      */
     @Override
-    public void setNamed(String key, PhiObject value) throws PhiException{
+    public void setNamed(String key, PhiObject value) throws PhiAccessException, PhiStructureException{
         if(key.equals("length") || key.equals("this"))
-            throw new PhiException("Collection member is read-only.");
+            throw new PhiAccessException("Collection member is read-only.");
 
         if(key.equals("super")){
             validateTypes(value);
@@ -571,7 +585,7 @@ public class PhiCollection extends PhiObject {
                     namedMembers.put("super", prevValue);
                 hasSuperClassCollection = prevHasSuperClassCollection;
                 ((PhiCollection) value).isSuperClassCollectionOf--;
-                throw new PhiException("Collection can not be it's own super class");
+                throw new PhiStructureException("Collection can not be it's own super class");
             }else if(prevValue != null){
                 prevValue.isSuperClassCollectionOf--;
             }
@@ -582,7 +596,7 @@ public class PhiCollection extends PhiObject {
                 if(parentScope != null)
                     parentScope.setNamed(key, value);
                 else
-                    throw new PhiException("Member " + key + " does not exist.");
+                    throw new PhiAccessException("Member " + key + " does not exist.");
             }
         }
     }

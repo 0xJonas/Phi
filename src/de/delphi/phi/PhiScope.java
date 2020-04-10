@@ -29,14 +29,14 @@ public class PhiScope extends PhiCollection{
     }
 
     @Override
-    public PhiObject getNamed(String key) throws PhiException{
+    public PhiObject getNamed(String key) throws PhiAccessException{
         if(key.equals("this") || key.equals("length") || key.equals("super"))
             return parentScope.getNamed(key);
         return super.getNamed(key);
     }
 
     @Override
-    public void setNamed(String key, PhiObject value) throws PhiException{
+    public void setNamed(String key, PhiObject value) throws PhiAccessException, PhiStructureException{
         if(key.equals("this") || key.equals("length") || key.equals("super")) {
             parentScope.getNamed(key);
             return;
