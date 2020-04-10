@@ -1,5 +1,6 @@
 package de.delphi.phi.parser;
 
+import de.delphi.phi.PhiSyntaxException;
 import de.delphi.phi.data.*;
 
 import java.io.IOException;
@@ -728,7 +729,7 @@ class Lexer {
      * @return The next token.
      * @throws IOException If something went wrong reading the input.
      */
-    public Token nextToken() throws IOException {
+    public Token nextToken() throws IOException, PhiSyntaxException {
         Token token;
         do{
             peek = reader.read();
@@ -746,6 +747,8 @@ class Lexer {
                 line++;
             }
         }while(token == null || token.tag == Tag.FILLER);
+        if(token.tag == Tag.ERROR)
+            throw new PhiSyntaxException("Invalid token: " + token.lexeme, token.line, token.col);
         return token;
     }
 }
