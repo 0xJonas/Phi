@@ -1,7 +1,8 @@
 package de.delphi.phi.parser.ast;
 
-import de.delphi.phi.PhiException;
+import de.delphi.phi.PhiRuntimeException;
 import de.delphi.phi.PhiScope;
+import de.delphi.phi.PhiTypeException;
 import de.delphi.phi.data.PhiCollection;
 import de.delphi.phi.data.PhiObject;
 import de.delphi.phi.data.PhiUnnamedSymbol;
@@ -20,7 +21,7 @@ public class SubscriptExpr extends Expression {
     }
 
     @Override
-    public PhiObject eval(PhiCollection parentScope) throws PhiException {
+    public PhiObject eval(PhiCollection parentScope) throws PhiRuntimeException {
         scope = new PhiScope(parentScope);
 
         PhiObject collection = collectionExpr.eval(scope);
@@ -29,7 +30,7 @@ public class SubscriptExpr extends Expression {
         PhiObject index = indexExpr.eval(scope);
         index = bindAndLookUp(index, scope);
         if(index.getType() != Type.INT)
-            throw new PhiException("Subscript must be of type INT.");
+            throw new PhiTypeException("Subscript must be of type INT.");
 
         return new PhiUnnamedSymbol((int) index.longValue(), collection);
     }

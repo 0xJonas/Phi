@@ -1,7 +1,8 @@
 package de.delphi.phi.parser.ast;
 
-import de.delphi.phi.PhiException;
+import de.delphi.phi.PhiRuntimeException;
 import de.delphi.phi.PhiScope;
+import de.delphi.phi.PhiTypeException;
 import de.delphi.phi.data.*;
 
 public class FunctionCallExpr extends Expression {
@@ -24,12 +25,12 @@ public class FunctionCallExpr extends Expression {
     }
 
     @Override
-    public PhiObject eval(PhiCollection parentScope) throws PhiException {
+    public PhiObject eval(PhiCollection parentScope) throws PhiRuntimeException {
         scope = new PhiScope(parentScope);
 
         PhiObject function = functionExpr.eval(scope);
         if(function.getType() != Type.FUNCTION)
-            throw new PhiException(function.getType() + " is not callable.");
+            throw new PhiTypeException(function.getType() + " is not callable.");
 
         PhiCollection paramCollection = new PhiCollection();
         int numUnnamed = 0;

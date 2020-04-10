@@ -1,6 +1,6 @@
 package de.delphi.phi.parser.ast;
 
-import de.delphi.phi.PhiException;
+import de.delphi.phi.PhiRuntimeException;
 import de.delphi.phi.data.PhiCollection;
 import de.delphi.phi.data.PhiNull;
 import de.delphi.phi.data.PhiObject;
@@ -19,7 +19,7 @@ public class BreakExpr extends Expression {
     }
 
     @Override
-    public PhiObject eval(PhiCollection parentScope) throws PhiException {
+    public PhiObject eval(PhiCollection parentScope) throws PhiRuntimeException {
         PhiObject retVal = PhiNull.NULL;
         if(returnExpr != null){
             retVal = returnExpr.eval(parentScope);

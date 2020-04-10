@@ -1,6 +1,7 @@
 package de.delphi.phi.parser.ast;
 
-import de.delphi.phi.PhiException;
+import de.delphi.phi.PhiRuntimeException;
+import de.delphi.phi.PhiTypeException;
 import de.delphi.phi.data.PhiCollection;
 import de.delphi.phi.data.PhiNull;
 import de.delphi.phi.data.PhiObject;
@@ -16,7 +17,7 @@ public class NewExpr extends Expression {
     }
 
     @Override
-    public PhiObject eval(PhiCollection parentScope) throws PhiException {
+    public PhiObject eval(PhiCollection parentScope) throws PhiRuntimeException {
         PhiObject result = body.eval(parentScope);
         result = bindAndLookUp(result, parentScope);
 
@@ -28,6 +29,6 @@ public class NewExpr extends Expression {
                 return PhiNull.NULL;
             }
         else
-            throw new PhiException("Cannot instantiate type " + result.getType());
+            throw new PhiTypeException("Cannot instantiate type " + result.getType());
     }
 }

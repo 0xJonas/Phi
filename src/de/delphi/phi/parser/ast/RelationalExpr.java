@@ -1,7 +1,8 @@
 package de.delphi.phi.parser.ast;
 
-import de.delphi.phi.PhiException;
+import de.delphi.phi.PhiRuntimeException;
 import de.delphi.phi.PhiScope;
+import de.delphi.phi.PhiTypeException;
 import de.delphi.phi.data.PhiCollection;
 import de.delphi.phi.data.PhiInt;
 import de.delphi.phi.data.PhiObject;
@@ -29,7 +30,7 @@ public class RelationalExpr extends Expression {
             expr.parentExpression = this;
     }
 
-    private boolean opEquals(PhiObject left, PhiObject right) throws PhiException{
+    private boolean opEquals(PhiObject left, PhiObject right) throws PhiRuntimeException{
         Type commonType = Type.coerceTypes(left.getType(), right.getType());
         switch(commonType){
             case INT: return left.longValue() == right.longValue();
@@ -37,11 +38,11 @@ public class RelationalExpr extends Expression {
             case STRING:
             case SYMBOL:
                 return left.toString().equals(right.toString());
-            default: throw new PhiException("Cannot compare types " + left.getType() + " and " + right.getType());
+            default: throw new PhiTypeException("Cannot compare types " + left.getType() + " and " + right.getType());
         }
     }
 
-    private boolean opLess(PhiObject left, PhiObject right) throws PhiException{
+    private boolean opLess(PhiObject left, PhiObject right) throws PhiRuntimeException{
         Type commonType = Type.coerceTypes(left.getType(), right.getType());
         switch(commonType){
             case INT: return left.longValue() < right.longValue();
@@ -49,11 +50,11 @@ public class RelationalExpr extends Expression {
             case STRING:
             case SYMBOL:
                 return left.toString().compareTo(right.toString()) < 0;
-            default: throw new PhiException("Cannot compare types " + left.getType() + " and " + right.getType());
+            default: throw new PhiTypeException("Cannot compare types " + left.getType() + " and " + right.getType());
         }
     }
 
-    private boolean relOp(PhiObject left, int op, PhiObject right) throws PhiException{
+    private boolean relOp(PhiObject left, int op, PhiObject right) throws PhiRuntimeException{
         switch(op){
             case OP_EQUALS: return opEquals(left, right);
             case OP_NOT_EQUALS: return !opEquals(left, right);
@@ -61,12 +62,12 @@ public class RelationalExpr extends Expression {
             case OP_LESS_EQUALS: return opLess(left, right) || opEquals(left, right);
             case OP_GREATER_THAN: return !(opLess(left, right) || opEquals(left, right));
             case OP_GREATER_EQUALS: return !opLess(left, right);
-            default: throw new PhiException("Bad operand " + op);
+            default: throw new PhiTypeException("Bad operand " + op);
         }
     }
 
     @Override
-    public PhiObject eval(PhiCollection parentScope) throws PhiException {
+    public PhiObject eval(PhiCollection parentScope) throws PhiRuntimeException {
         scope = new PhiScope(parentScope);
 
         PhiObject left = operands[0].eval(scope);

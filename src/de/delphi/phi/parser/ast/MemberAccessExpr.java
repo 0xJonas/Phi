@@ -1,7 +1,8 @@
 package de.delphi.phi.parser.ast;
 
-import de.delphi.phi.PhiException;
+import de.delphi.phi.PhiRuntimeException;
 import de.delphi.phi.PhiScope;
+import de.delphi.phi.PhiTypeException;
 import de.delphi.phi.data.PhiCollection;
 import de.delphi.phi.data.PhiObject;
 import de.delphi.phi.data.PhiSymbol;
@@ -20,7 +21,7 @@ public class MemberAccessExpr extends Expression {
     }
 
     @Override
-    public PhiObject eval(PhiCollection parentScope) throws PhiException {
+    public PhiObject eval(PhiCollection parentScope) throws PhiRuntimeException {
         scope = new PhiScope(parentScope);
 
         PhiObject collection = collectionExpr.eval(scope);
@@ -28,7 +29,7 @@ public class MemberAccessExpr extends Expression {
 
         PhiObject name = nameExpr.eval(scope);
         if(name.getType() != Type.SYMBOL)
-            throw new PhiException("Member name must be of type SYMBOL.");
+            throw new PhiTypeException("Member name must be of type SYMBOL.");
 
         return new PhiSymbol(name.toString(), collection);
     }

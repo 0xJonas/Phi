@@ -1,7 +1,8 @@
 package de.delphi.phi.parser.ast;
 
-import de.delphi.phi.PhiException;
+import de.delphi.phi.PhiRuntimeException;
 import de.delphi.phi.PhiScope;
+import de.delphi.phi.PhiTypeException;
 import de.delphi.phi.data.PhiCollection;
 import de.delphi.phi.data.PhiObject;
 import de.delphi.phi.data.PhiSymbol;
@@ -20,12 +21,12 @@ public class AssignExpr extends Expression {
     }
 
     @Override
-    public PhiObject eval(PhiCollection parentScope) throws PhiException {
+    public PhiObject eval(PhiCollection parentScope) throws PhiRuntimeException {
         scope = new PhiScope(parentScope);
 
         PhiObject left = leftExpr.eval(scope);
         if(left.getType() != Type.SYMBOL)
-            throw new PhiException("Values can only be assigned to SYMBOLs");
+            throw new PhiTypeException("Values can only be assigned to SYMBOLs");
         if(!((PhiSymbol) left).isBound())
             left = new PhiSymbol(left.toString(), parentScope);
 

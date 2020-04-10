@@ -1,6 +1,7 @@
 package de.delphi.phi.parser.ast;
 
-import de.delphi.phi.PhiException;
+import de.delphi.phi.PhiRuntimeException;
+import de.delphi.phi.PhiTypeException;
 import de.delphi.phi.data.PhiCollection;
 import de.delphi.phi.data.PhiInt;
 import de.delphi.phi.data.PhiObject;
@@ -21,7 +22,7 @@ public class CollectionDefinitionExpr extends Expression {
     }
 
     @Override
-    public PhiObject eval(PhiCollection parentScope) throws PhiException {
+    public PhiObject eval(PhiCollection parentScope) throws PhiRuntimeException {
         PhiCollection collection = new PhiCollection(parentScope);
 
         for(int i = 0; i < content.length(); i++){
@@ -30,7 +31,7 @@ public class CollectionDefinitionExpr extends Expression {
             Expression valueExpr = content.getValue(i);
             if(valueExpr != null){
                 if(name.getType() != Type.SYMBOL)
-                    throw new PhiException("Name of collection member must be of type SYMBOL.");
+                    throw new PhiTypeException("Name of collection member must be of type SYMBOL.");
 
                 PhiObject value = valueExpr.eval(collection);
                 value = bindAndLookUp(value, collection);

@@ -1,7 +1,8 @@
 package de.delphi.phi.parser.ast;
 
-import de.delphi.phi.PhiException;
+import de.delphi.phi.PhiRuntimeException;
 import de.delphi.phi.PhiScope;
+import de.delphi.phi.PhiTypeException;
 import de.delphi.phi.data.*;
 
 public class VariableDeclarationExpr extends Expression {
@@ -19,13 +20,13 @@ public class VariableDeclarationExpr extends Expression {
     }
 
     @Override
-    public PhiObject eval(PhiCollection parentScope) throws PhiException {
+    public PhiObject eval(PhiCollection parentScope) throws PhiRuntimeException {
         scope = new PhiScope(parentScope);
         PhiObject name = PhiNull.NULL;
         for(int i = 0; i < content.length(); i++){
             name = content.getName(i).eval(parentScope);
             if(name.getType() != Type.SYMBOL)
-                throw new PhiException("Variable name must be of type SYMBOL");
+                throw new PhiTypeException("Variable name must be of type SYMBOL");
             if(!((PhiSymbol) name).isBound())
                 name = new PhiSymbol(name.toString(), parentScope);
             ((PhiSymbol) name).declare();

@@ -1,7 +1,7 @@
 package de.delphi.phi.data;
 
 import de.delphi.phi.PhiArgumentException;
-import de.delphi.phi.PhiException;
+import de.delphi.phi.PhiRuntimeException;
 import de.delphi.phi.PhiScope;
 
 import java.util.List;
@@ -41,7 +41,7 @@ public class ParameterList {
         return -1;
     }
 
-    public PhiScope supplyParameters(PhiCollection params) throws PhiException {
+    public PhiScope supplyParameters(PhiCollection params) throws PhiRuntimeException {
         if(params.getLength().longValue() > names.length)
             throw new PhiArgumentException("Too many parameters.");
 

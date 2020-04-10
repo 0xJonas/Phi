@@ -1,6 +1,6 @@
 package de.delphi.phi.data;
 
-import de.delphi.phi.PhiException;
+import de.delphi.phi.PhiRuntimeException;
 import de.delphi.phi.PhiScope;
 import de.delphi.phi.parser.ast.Expression;
 import de.delphi.phi.parser.ast.FunctionBody;
@@ -29,7 +29,7 @@ public class PhiFunction extends PhiObject {
         return super.toString();
     }
 
-    public PhiObject call(PhiCollection params) throws PhiException {
+    public PhiObject call(PhiCollection params) throws PhiRuntimeException {
         PhiScope scope = parameterList.supplyParameters(params);
         scope.setParentScope(creationScope);
 
