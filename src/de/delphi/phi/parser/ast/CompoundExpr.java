@@ -6,14 +6,14 @@ import de.delphi.phi.data.PhiCollection;
 import de.delphi.phi.data.PhiNull;
 import de.delphi.phi.data.PhiObject;
 
-import java.util.ArrayList;
+import java.util.List;
 
 public class CompoundExpr extends ExitableExpr{
 
-    private ArrayList<Expression> children;
+    private Expression[] children;
 
-    public CompoundExpr(ArrayList<Expression> children){
-        this.children = new ArrayList<>(children);
+    public CompoundExpr(List<Expression> children){
+        this.children = children.toArray(new Expression[0]);
         for(Expression expr: children)
             expr.parentExpression = this;
     }

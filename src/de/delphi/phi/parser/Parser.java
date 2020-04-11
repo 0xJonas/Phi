@@ -1,11 +1,11 @@
 package de.delphi.phi.parser;
 
 import de.delphi.phi.PhiSyntaxException;
-import de.delphi.phi.parser.ast.Expression;
-import de.delphi.phi.parser.ast.ExpressionList;
+import de.delphi.phi.parser.ast.*;
 
 import java.io.IOException;
 import java.io.Reader;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Parser {
@@ -40,10 +40,20 @@ public class Parser {
     }
 
     private Expression expression() throws IOException{
-        Expression expr = null;
+        Expression expr;
         switch(peek.tag){
             case LAMBDA: expr = lambdaExpr(); break;
             case IF: expr = ifExpr(); break;
+            case WHILE: expr = whileExpr(); break;
+            case FOR: expr = forExpr(); break;
+            case LEFT_BRACE: expr = compoundExpr(); break;
+            case BREAK: expr = breakExpr(); break;
+            case CONTINUE: expr = continueExpr(); break;
+            case RETURN: expr = returnExpr(); break;
+            case VAR: expr = varExpr(); break;
+            case FUNCTION: expr = functionExpr(); break;
+            case LEFT_BRACKET: expr = collectionExpr(); break;
+            default: expr = assignExpr(); break;
         }
 
         while(peek.tag == Tag.SEMICOLON)
@@ -51,73 +61,160 @@ public class Parser {
         return expr;
     }
 
-    private Expression lambdaExpr(){
-
-        return null;
+    private Expression lambdaExpr() throws IOException{
+        consume();
+        expect(Tag.LEFT_PARENTHESIS, "( expected.");
+        ExpressionList params = declList(Tag.RIGHT_PARENTHESIS);
+        expect(Tag.RIGHT_PARENTHESIS, ") expected.");
+        expect(Tag.ARROW, "-> expected.");  //Maybe not?
+        Expression body = expression();
+        return new FunctionDefinitionExpr(params, new FunctionBody(body));
     }
 
-    private Expression ifExpr(){
-
-        return null;
+    private Expression ifExpr() throws IOException{
+        consume();
+        Expression condition = expression();
+        if(peek.tag == Tag.THEN)
+            consume();
+        Expression trueExpr = expression(), falseExpr = null;
+        if(peek.tag == Tag.ELSE){
+            consume();
+            falseExpr = expression();
+        }
+        return new IfExpr(condition, trueExpr, falseExpr);
     }
 
-    private Expression whileExpr(){
+    private Expression whileExpr() throws IOException{
+        consume();
+        Expression condition = expression();
+        if(peek.tag == Tag.DO)
+            consume();
+        Expression body = expression();
 
-        return null;
+        return new WhileExpr(condition, body);
     }
 
-    private Expression forExpr(){
-
-        return null;
+    private Expression forExpr() throws IOException{
+        consume();
+        Expression init = expression();
+        Expression condition = expression();
+        Expression iteration = expression();
+        Expression body = expression();
+        return new ForExpr(init, condition, iteration, body);
     }
 
-    private Expression compoundExpr(){
-
-        return null;
+    private Expression compoundExpr() throws IOException{
+        consume();
+        ArrayList<Expression> expressions = new ArrayList<>();
+        do{
+            expressions.add(expression());
+        }while(peek.tag != Tag.RIGHT_BRACE);
+        return new CompoundExpr(expressions);
     }
 
-    private Expression breakExpr(){
-
-        return null;
+    private Expression breakExpr() throws IOException{
+        consume();
+        Expression returnExpr = null;
+        if(peek.tag == Tag.LEFT_PARENTHESIS){
+            consume();
+            if(peek.tag == Tag.RIGHT_PARENTHESIS){
+                consume();
+            }else{
+                returnExpr = expression();
+                expect(Tag.RIGHT_PARENTHESIS, ") expected.");
+            }
+        }
+        return new BreakExpr(returnExpr);
     }
 
-    private Expression continueExpr(){
-
-        return null;
+    private Expression continueExpr() throws IOException{
+        consume();
+        Expression returnExpr = null;
+        if(peek.tag == Tag.LEFT_PARENTHESIS){
+            consume();
+            if(peek.tag == Tag.RIGHT_PARENTHESIS){
+                consume();
+            }else{
+                returnExpr = expression();
+                expect(Tag.RIGHT_PARENTHESIS, ") expected.");
+            }
+        }
+        return new ContinueExpr(returnExpr);
     }
 
-    private Expression returnExpr(){
-
-        return null;
+    private Expression returnExpr() throws IOException{
+        consume();
+        Expression retVal = expression();
+        return new ReturnExpr(retVal);
     }
 
-    private Expression varExpr(){
+    private Expression varExpr() throws IOException{
+        consume();
+        ArrayList<Expression> names = new ArrayList<>();
+        ArrayList<Expression> values = new ArrayList<>();
 
-        return null;
+        do{
+            varDecl(names, values);
+            if(peek.tag == Tag.COMMA)
+                consume();
+            else
+                break;
+        }while(true);
+
+        return new VariableDeclarationExpr(new ExpressionList(names, values));
     }
 
-    private Expression functionExpr(){
-
-        return null;
+    private Expression functionExpr() throws IOException{
+        ArrayList<Expression> names = new ArrayList<>();
+        ArrayList<Expression> values = new ArrayList<>();
+        functionDecl(names, values);
+        return new VariableDeclarationExpr(new ExpressionList(names, values));
     }
 
-    private Expression collectionExpr(){
-
-        return null;
+    private Expression collectionExpr() throws IOException{
+        consume();
+        ExpressionList content = declList(Tag.RIGHT_BRACKET);
+        expect(Tag.RIGHT_BRACKET, "] expected.");
+        return new CollectionDefinitionExpr(content);
     }
 
     private Expression assignExpr(){
+        Expression left = orExpr();
 
         return null;
     }
 
-    private ExpressionList declList(){
-
-        return null;
+    private ExpressionList declList(Tag closingTag) throws IOException{
+        ArrayList<Expression> names = new ArrayList<>();
+        ArrayList<Expression> values = new ArrayList<>();
+        while(peek.tag != closingTag){
+            if(peek.tag == Tag.FUNCTION)
+                functionDecl(names, values);
+            else
+                varDecl(names, values);
+        }
+        consume();
+        return new ExpressionList(names, values);
     }
 
-    private void declaration(List<Expression> names, List<Expression> values){
+    private void varDecl(List<Expression> names, List<Expression> values) throws IOException{
+        names.add(orExpr());
+        if(peek.tag == Tag.ASSIGN){
+            consume();
+            values.add(orExpr());
+        }else{
+            values.add(null);
+        }
+    }
 
+    private void functionDecl(List<Expression> names, List<Expression> values) throws IOException {
+        consume();
+        names.add(expression());
+        expect(Tag.LEFT_PARENTHESIS, "( expected.");
+        ExpressionList params = declList(Tag.RIGHT_PARENTHESIS);
+        expect(Tag.RIGHT_PARENTHESIS, ") expected");
+        Expression body = expression();
+        values.add(new FunctionDefinitionExpr(params, new FunctionBody(body)));
     }
 
     private Expression orExpr(){
