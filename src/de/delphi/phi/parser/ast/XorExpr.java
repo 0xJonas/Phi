@@ -20,6 +20,12 @@ public class XorExpr extends Expression {
             expr.parentExpression = this;
     }
 
+    public XorExpr(Expression left, Expression right){
+        operands = new Expression[]{left, right};
+        left.parentExpression = this;
+        right.parentExpression = this;
+    }
+
     @Override
     public PhiObject eval(PhiCollection parentScope) throws PhiRuntimeException {
         scope = new PhiScope(parentScope);

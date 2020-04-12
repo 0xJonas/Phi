@@ -30,6 +30,13 @@ public class RelationalExpr extends Expression {
             expr.parentExpression = this;
     }
 
+    public RelationalExpr(Expression left, int operator, Expression right){
+        operands = new Expression[]{left, right};
+        operators = new Integer[]{OP_EQUALS, operator};
+        left.parentExpression = this;
+        right.parentExpression = this;
+    }
+
     private boolean opEquals(PhiObject left, PhiObject right) throws PhiRuntimeException{
         Type commonType = Type.coerceTypes(left.getType(), right.getType());
         switch(commonType){

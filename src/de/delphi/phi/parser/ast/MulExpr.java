@@ -24,6 +24,13 @@ public class MulExpr extends Expression {
             expr.parentExpression = this;
     }
 
+    public MulExpr(Expression left, int operator, Expression right){
+        operands = new Expression[]{left, right};
+        operators = new Integer[]{OP_MUL, operator};
+        left.parentExpression = this;
+        right.parentExpression = this;
+    }
+
     private PhiObject mul(PhiObject po1, PhiObject po2) throws PhiRuntimeException{
         Type commonType = Type.coerceTypes(po1.getType(), po2.getType());
         switch(commonType){

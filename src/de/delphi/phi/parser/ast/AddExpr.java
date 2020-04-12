@@ -24,6 +24,13 @@ public class AddExpr extends Expression {
             expr.parentExpression = this;
     }
 
+    public AddExpr(Expression left, int operator, Expression right){
+        operands = new Expression[]{left, right};
+        operators = new Integer[]{OP_ADD, operator};
+        left.parentExpression = this;
+        right.parentExpression = this;
+    }
+
     private PhiObject add(PhiObject po1, PhiObject po2) throws PhiRuntimeException {
         Type commonType = Type.coerceTypes(po1.getType(), po2.getType());
         switch(commonType){

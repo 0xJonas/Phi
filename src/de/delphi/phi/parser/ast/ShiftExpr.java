@@ -26,6 +26,13 @@ public class ShiftExpr extends Expression {
             expr.parentExpression = this;
     }
 
+    public ShiftExpr(Expression left, int operator, Expression right){
+        operands = new Expression[]{left, right};
+        operators = new Integer[]{OP_SHIFT_LEFT, operator};
+        left.parentExpression = this;
+        right.parentExpression = this;
+    }
+
     @Override
     public PhiObject eval(PhiCollection parentScope) throws PhiRuntimeException {
         scope = new PhiScope(parentScope);
