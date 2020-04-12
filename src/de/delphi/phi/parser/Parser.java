@@ -1,6 +1,7 @@
 package de.delphi.phi.parser;
 
 import de.delphi.phi.PhiSyntaxException;
+import de.delphi.phi.data.PhiSymbol;
 import de.delphi.phi.parser.ast.*;
 
 import java.io.IOException;
@@ -178,9 +179,9 @@ public class Parser {
         return new CollectionDefinitionExpr(content);
     }
 
-    private Expression assignExpr(){
+    private Expression assignExpr() throws IOException{
         Expression left = orExpr();
-
+        //TODO implement
         return null;
     }
 
@@ -217,59 +218,192 @@ public class Parser {
         values.add(new FunctionDefinitionExpr(params, new FunctionBody(body)));
     }
 
-    private Expression orExpr(){
-
-        return null;
+    private Expression orExpr() throws IOException{
+        ArrayList<Expression> children = new ArrayList<>();
+        do {
+            children.add(xorExpr());
+            if(peek.tag != Tag.OR)
+                break;
+            consume();
+        }while(true);
+        if(children.size() == 1)
+            return children.get(0);
+        else
+            return new OrExpr(children);
     }
 
-    private Expression xorExpr(){
-
-        return null;
+    private Expression xorExpr() throws IOException{
+        ArrayList<Expression> children = new ArrayList<>();
+        do {
+            children.add(andExpr());
+            if(peek.tag != Tag.XOR)
+                break;
+            consume();
+        }while(true);
+        if(children.size() == 1)
+            return children.get(0);
+        else
+            return new XorExpr(children);
     }
 
-    public Expression andExpr(){
-
-        return null;
+    public Expression andExpr() throws IOException{
+        ArrayList<Expression> children = new ArrayList<>();
+        do {
+            children.add(relExpr());
+            if(peek.tag != Tag.AND)
+                break;
+            consume();
+        }while(true);
+        if(children.size() == 1)
+            return children.get(0);
+        else
+            return new AndExpr(children);
     }
 
-    public Expression relExpr(){
+    public Expression relExpr() throws IOException{
+        ArrayList<Expression> children = new ArrayList<>();
+        ArrayList<Integer> operators = new ArrayList<>();
+        operators.add(RelationalExpr.OP_EQUALS);
 
-        return null;
+        outer: do {
+            children.add(shiftExpr());
+            switch(peek.tag){
+                case LESS_THAN: operators.add(RelationalExpr.OP_LESS_THAN); consume(); break;
+                case LESS_EQUALS: operators.add(RelationalExpr.OP_LESS_EQUALS); consume(); break;
+                case EQUALS: operators.add(RelationalExpr.OP_EQUALS); consume(); break;
+                case NOT_EQUALS: operators.add(RelationalExpr.OP_NOT_EQUALS); consume(); break;
+                case GREATER_EQUALS: operators.add(RelationalExpr.OP_GREATER_EQUALS); consume(); break;
+                case GREATER_THAN: operators.add(RelationalExpr.OP_GREATER_THAN); consume(); break;
+                default: break outer;
+            }
+        }while(true);
+        if(children.size() == 1)
+            return children.get(0);
+        else
+            return new RelationalExpr(children, operators);
     }
 
-    public Expression shiftExpr(){
+    public Expression shiftExpr() throws IOException{
+        ArrayList<Expression> children = new ArrayList<>();
+        ArrayList<Integer> operators = new ArrayList<>();
+        operators.add(ShiftExpr.OP_SHIFT_LEFT);
 
-        return null;
+        outer: do {
+            children.add(addExpr());
+            switch(peek.tag){
+                case SHIFT_LEFT: operators.add(ShiftExpr.OP_SHIFT_LEFT); consume(); break;
+                case SHIFT_RIGHT: operators.add(ShiftExpr.OP_SHIFT_RIGHT); consume(); break;
+                default: break outer;
+            }
+        }while(true);
+        if(children.size() == 1)
+            return children.get(0);
+        else
+            return new ShiftExpr(children, operators);
     }
 
-    public Expression addExpr(){
+    public Expression addExpr() throws IOException{
+        ArrayList<Expression> children = new ArrayList<>();
+        ArrayList<Integer> operators = new ArrayList<>();
+        operators.add(AddExpr.OP_ADD);
 
-        return null;
+        outer: do {
+            children.add(mulExpr());
+            switch(peek.tag){
+                case ADD: operators.add(AddExpr.OP_ADD); consume(); break;
+                case SUB: operators.add(AddExpr.OP_SUB); consume(); break;
+                default: break outer;
+            }
+        }while(true);
+        if(children.size() == 1)
+            return children.get(0);
+        else
+            return new AddExpr(children, operators);
     }
 
-    public Expression mulExpr(){
+    public Expression mulExpr() throws IOException{
+        ArrayList<Expression> children = new ArrayList<>();
+        ArrayList<Integer> operators = new ArrayList<>();
+        operators.add(MulExpr.OP_MUL);
 
-        return null;
+        outer: do {
+            children.add(unaryExpr());
+            switch(peek.tag){
+                case MUL: operators.add(MulExpr.OP_MUL); consume(); break;
+                case DIV: operators.add(MulExpr.OP_DIV); consume(); break;
+                case MOD: operators.add(MulExpr.OP_MOD); consume(); break;
+                default: break outer;
+            }
+        }while(true);
+        if(children.size() == 1)
+            return children.get(0);
+        else
+            return new MulExpr(children, operators);
     }
 
-    public Expression unaryExpr(){
-
-        return null;
+    public Expression unaryExpr() throws IOException{
+        switch(peek.tag){
+            case SUB: consume(); return new NegationExpr(postfixExpr());
+            case NOT: consume(); return new NotExpr(postfixExpr());
+            case NEW: consume(); return new NewExpr(postfixExpr());
+            default: return postfixExpr();
+        }
     }
 
-    public Expression postfixExpr(){
-
-        return null;
+    public Expression postfixExpr() throws IOException{
+        Expression name = quoteExpr();
+        outer: do {
+            switch (peek.tag) {
+                case LEFT_BRACKET:
+                    consume();
+                    Expression index = expression();
+                    expect(Tag.RIGHT_BRACKET, "] expected.");
+                    name = new SubscriptExpr(name, index);
+                    break;
+                case PERIOD:
+                    consume();
+                    Expression member = atom();
+                    name = new MemberAccessExpr(name, member);
+                    break;
+                case LEFT_PARENTHESIS:
+                    consume();
+                    ExpressionList params = declList(Tag.RIGHT_PARENTHESIS);
+                    name = new FunctionCallExpr(name, params);
+                default: break outer;
+            }
+        }while(true);
+        return name;
     }
 
-    public Expression quoteExpr(){
-
-        return null;
+    public Expression quoteExpr() throws IOException{
+        if(peek.tag == Tag.QUOTE){
+            consume();
+            return new QuoteExpr(atom());
+        }else
+            return atom();
     }
 
-    public Expression atom(){
-
-        return null;
+    public Expression atom() throws IOException{
+        do{
+            switch (peek.tag) {
+                case LITERAL:
+                    Atom atom = new Atom(((Literal) peek).content);
+                    consume();
+                    return atom;
+                case SYMBOL:
+                    PhiSymbol symbol = new PhiSymbol(peek.lexeme);
+                    consume();
+                    return new Atom(symbol);
+                case LEFT_PARENTHESIS:
+                    Expression subExpr = expression();
+                    expect(Tag.RIGHT_PARENTHESIS, ") expected.");
+                    return subExpr;
+                default:
+                    errorLog.append(new PhiSyntaxException("Unexpected token " + peek.lexeme, peek.line, peek.col));
+                    consume();
+                    break;
+            }
+        }while(true);
     }
 
     public boolean eoi(){
