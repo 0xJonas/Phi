@@ -5,7 +5,6 @@ import de.delphi.phi.PhiSyntaxException;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.io.StringReader;
 
 import static org.junit.Assert.assertEquals;
 
@@ -14,8 +13,7 @@ public class LexerTest {
     @Test
     public void testReservedWords() throws IOException, PhiSyntaxException {
         String input = "if then else while do for break continue return var function lambda new true false null";
-        Lexer lexer = new Lexer();
-        lexer.setInput(new StringReader(input));
+        Lexer lexer = new Lexer(input);
 
         assertEquals(new Token(Tag.IF, "if", 0, 0), lexer.nextToken());
         assertEquals(new Token(Tag.THEN, "then", 0, 3), lexer.nextToken());
@@ -39,8 +37,7 @@ public class LexerTest {
     @Test
     public void testOperators() throws IOException, PhiSyntaxException {
         String input = "+ - * / % & | ^ ! << >> = == += -= *= /= %= &= |= ^= != <<= >>= < > <= >= -> , . ' ;";
-        Lexer lexer = new Lexer();
-        lexer.setInput(new StringReader(input));
+        Lexer lexer = new Lexer(input);
 
         assertEquals(new Token(Tag.ADD, "+", 0, 0), lexer.nextToken());
         assertEquals(new Token(Tag.SUB, "-", 0, 2), lexer.nextToken());
@@ -81,8 +78,7 @@ public class LexerTest {
     @Test
     public void testComments() throws IOException, PhiSyntaxException {
         String input = "abc /*a comment*/ def //line comment \nghi /*\n*/test";
-        Lexer lexer = new Lexer();
-        lexer.setInput(new StringReader(input));
+        Lexer lexer = new Lexer(input);
 
         assertEquals(new Token(Tag.SYMBOL, "abc", 0, 0), lexer.nextToken());
         assertEquals(new Token(Tag.SYMBOL, "def", 0, 18), lexer.nextToken());
@@ -93,8 +89,7 @@ public class LexerTest {
     @Test
     public void testParentheses() throws IOException, PhiSyntaxException {
         String input = "()[]{}";
-        Lexer lexer = new Lexer();
-        lexer.setInput(new StringReader(input));
+        Lexer lexer = new Lexer(input);
 
         assertEquals(new Token(Tag.LEFT_PARENTHESIS, "(", 0 ,0), lexer.nextToken());
         assertEquals(new Token(Tag.RIGHT_PARENTHESIS, ")", 0 ,1), lexer.nextToken());
@@ -108,8 +103,7 @@ public class LexerTest {
     @Test
     public void testLiterals() throws IOException, PhiRuntimeException, PhiSyntaxException {
         String input = "\"hello \\\"world\\\"\" 123 0x1f3 0107 0b101011 1.23 .0 1. 5.5e2 200e-2  0xa.b 0x0.1p2 0b10.01 0b10.01e-11";
-        Lexer lexer = new Lexer();
-        lexer.setInput(new StringReader(input));
+        Lexer lexer = new Lexer(input);
 
         assertEquals("hello \"world\"", ((Literal) lexer.nextToken()).content.toString());
         assertEquals(123, ((Literal) lexer.nextToken()).content.longValue());
@@ -138,8 +132,7 @@ public class LexerTest {
                 "            then list[i]\n" +
                 "            else min}\n" +
                 "            min";
-        Lexer lexer = new Lexer();
-        lexer.setInput(new StringReader(input));
+        Lexer lexer = new Lexer(input);
 
         assertEquals(new Token(Tag.FUNCTION, "function", 0 ,0), lexer.nextToken());
         assertEquals(new Token(Tag.SYMBOL, "min", 0 ,9), lexer.nextToken());

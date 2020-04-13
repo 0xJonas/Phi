@@ -5,6 +5,7 @@ import de.delphi.phi.data.*;
 
 import java.io.IOException;
 import java.io.Reader;
+import java.io.StringReader;
 
 /**
  * Turns text input into a stream of tokens.
@@ -101,10 +102,14 @@ class Lexer {
      * Sets the input for the lexer and resets it's state.
      * @param reader The input reader
      */
-    public void setInput(Reader reader){
+    public Lexer(Reader reader){
         this.reader = reader;
         lexeme = new StringBuilder();
-        state = State.START;
+    }
+
+    public Lexer(String input){
+        this.reader = new StringReader(input);
+        lexeme = new StringBuilder();
     }
 
     /**

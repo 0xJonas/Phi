@@ -18,8 +18,11 @@ public class Parser {
     private StringBuilder errorLog;
 
     public Parser(Reader in){
-        lexer = new Lexer();
-        lexer.setInput(in);
+        lexer = new Lexer(in);
+    }
+
+    public Parser(String input){
+        lexer = new Lexer(input);
     }
 
     private void consume() throws IOException{
