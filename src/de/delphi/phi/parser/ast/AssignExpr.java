@@ -10,17 +10,17 @@ import de.delphi.phi.data.Type;
 
 public class AssignExpr extends Expression {
 
-    private static final int OP_ASSIGN = 0;
-    private static final int OP_ASSIGN_ADD = 1;
-    private static final int OP_ASSIGN_SUB = 2;
-    private static final int OP_ASSIGN_MUL = 3;
-    private static final int OP_ASSIGN_DIV = 4;
-    private static final int OP_ASSIGN_MOD = 5;
-    private static final int OP_ASSIGN_AND = 6;
-    private static final int OP_ASSIGN_OR = 7;
-    private static final int OP_ASSIGN_XOR = 8;
-    private static final int OP_ASSIGN_SHIFT_LEFT = 9;
-    private static final int OP_ASSIGN_SHIFT_RIGHT = 10;
+    public static final int OP_ASSIGN = 0;
+    public static final int OP_ASSIGN_ADD = 1;
+    public static final int OP_ASSIGN_SUB = 2;
+    public static final int OP_ASSIGN_MUL = 3;
+    public static final int OP_ASSIGN_DIV = 4;
+    public static final int OP_ASSIGN_MOD = 5;
+    public static final int OP_ASSIGN_AND = 6;
+    public static final int OP_ASSIGN_OR = 7;
+    public static final int OP_ASSIGN_XOR = 8;
+    public static final int OP_ASSIGN_SHIFT_LEFT = 9;
+    public static final int OP_ASSIGN_SHIFT_RIGHT = 10;
 
     private final Expression leftExpr, rightExpr;
 

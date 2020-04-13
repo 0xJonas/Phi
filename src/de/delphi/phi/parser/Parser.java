@@ -181,8 +181,42 @@ public class Parser {
 
     private Expression assignExpr() throws IOException{
         Expression left = orExpr();
-        //TODO implement
-        return null;
+        switch(peek.tag){
+            case ASSIGN:
+                consume();
+                return new AssignExpr(left, expression());
+            case ASSIGN_ADD:
+                consume();
+                return new AssignExpr(left, AssignExpr.OP_ASSIGN_ADD, expression());
+            case ASSIGN_SUB:
+                consume();
+                return new AssignExpr(left, AssignExpr.OP_ASSIGN_SUB, expression());
+            case ASSIGN_MUL:
+                consume();
+                return new AssignExpr(left, AssignExpr.OP_ASSIGN_MUL, expression());
+            case ASSIGN_DIV:
+                consume();
+                return new AssignExpr(left, AssignExpr.OP_ASSIGN_DIV, expression());
+            case ASSIGN_MOD:
+                consume();
+                return new AssignExpr(left, AssignExpr.OP_ASSIGN_MOD, expression());
+            case ASSIGN_AND:
+                consume();
+                return new AssignExpr(left, AssignExpr.OP_ASSIGN_AND, expression());
+            case ASSIGN_OR:
+                consume();
+                return new AssignExpr(left, AssignExpr.OP_ASSIGN_OR, expression());
+            case ASSIGN_XOR:
+                consume();
+                return new AssignExpr(left, AssignExpr.OP_ASSIGN_XOR, expression());
+            case ASSIGN_SHIFT_LEFT:
+                consume();
+                return new AssignExpr(left, AssignExpr.OP_ASSIGN_SHIFT_LEFT, expression());
+            case ASSIGN_SHIFT_RIGHT:
+                consume();
+                return new AssignExpr(left, AssignExpr.OP_ASSIGN_SHIFT_RIGHT, expression());
+            default: return left;
+        }
     }
 
     private ExpressionList declList(Tag closingTag) throws IOException{
