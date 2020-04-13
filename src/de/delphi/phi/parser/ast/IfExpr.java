@@ -17,7 +17,8 @@ public class IfExpr extends Expression{
 
         condition.parentExpression = this;
         trueExpr.parentExpression = this;
-        falseExpr.parentExpression = this;
+        if(falseExpr != null)
+            falseExpr.parentExpression = this;
     }
 
     @Override

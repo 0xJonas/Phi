@@ -11,7 +11,8 @@ public class ContinueExpr extends Expression{
 
     public ContinueExpr(Expression returnExpr){
         this.returnExpr = returnExpr;
-        returnExpr.parentExpression = this;
+        if(returnExpr != null)
+            returnExpr.parentExpression = this;
     }
 
     private boolean isLoopExpression(Expression expr){
