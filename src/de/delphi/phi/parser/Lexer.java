@@ -409,7 +409,15 @@ class Lexer {
                 switch(peek){
                     case 'h': state = State.TH; return null;
                     case 'r': state = State.TR; return null;
-                    default: state = State.SYMBOL; return null;
+                    default: {
+                        if (isValidSymbolPart(peek)) {
+                            state = State.SYMBOL;
+                            return null;
+                        } else {
+                            startNextToken();
+                            return makeToken(Tag.SYMBOL);
+                        }
+                    }
                 }
             }
             case TH: return matchReservedWord('e', State.THE);
@@ -435,7 +443,15 @@ class Lexer {
                     case 'a': state = State.FA; return null;
                     case 'o': state = State.FO; return null;
                     case 'u': state = State.FU; return null;
-                    default: state = State.SYMBOL; return null;
+                    default: {
+                        if (isValidSymbolPart(peek)) {
+                            state = State.SYMBOL;
+                            return null;
+                        } else {
+                            startNextToken();
+                            return makeToken(Tag.SYMBOL);
+                        }
+                    }
                 }
             }
             case FO: return matchReservedWord('r', State.FOR);
@@ -486,7 +502,15 @@ class Lexer {
                 switch(peek){
                     case 'e': state = State.NE; return null;
                     case 'u': state = State.NU; return null;
-                    default: state = State.SYMBOL; return null;
+                    default: {
+                        if (isValidSymbolPart(peek)) {
+                            state = State.SYMBOL;
+                            return null;
+                        } else {
+                            startNextToken();
+                            return makeToken(Tag.SYMBOL);
+                        }
+                    }
                 }
             }
             case NE: return matchReservedWord('w', State.NEW);

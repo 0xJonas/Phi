@@ -73,4 +73,46 @@ public class ParserTest {
         assertTrue(parser.nextExpression() instanceof CollectionDefinitionExpr);
         assertTrue(parser.eoi());
     }
+
+    private Expression getInnerExpression(Expression root, int... indices){
+        Expression current = root;
+        for(int index: indices)
+            current = current.getChild(index);
+        return current;
+    }
+
+    @Test
+    public void testOperatorPrecedence() throws IOException, PhiSyntaxException{
+        Expression testExpr1 = new Parser("1 + 2 - 3 * - 4 / (5 + 6)").nextExpression();
+        assertTrue(getInnerExpression(testExpr1) instanceof AddExpr);
+        assertTrue(getInnerExpression(testExpr1, 2) instanceof MulExpr);
+        assertTrue(getInnerExpression(testExpr1, 2, 1) instanceof NegationExpr);
+        assertTrue(getInnerExpression(testExpr1, 2, 2) instanceof AddExpr);
+
+        Expression testExpr2 = new Parser("a & b | c ^ d & e").nextExpression();
+        assertTrue(getInnerExpression(testExpr2) instanceof OrExpr);
+        assertTrue(getInnerExpression(testExpr2, 0) instanceof AndExpr);
+        assertTrue(getInnerExpression(testExpr2, 1) instanceof XorExpr);
+        assertTrue(getInnerExpression(testExpr2, 1, 1) instanceof AndExpr);
+
+        Expression testExpr3 = new Parser("a >= b & c < d << 2").nextExpression();
+        assertTrue(getInnerExpression(testExpr3) instanceof AndExpr);
+        assertTrue(getInnerExpression(testExpr3, 0) instanceof RelationalExpr);
+        assertTrue(getInnerExpression(testExpr3, 1) instanceof RelationalExpr);
+        assertTrue(getInnerExpression(testExpr3, 1, 1) instanceof ShiftExpr);
+
+        Expression testExpr4 = new Parser("a += b ^ c < 2 | d & e << 1 + 'f.x * 3 + '(g[0])").nextExpression();
+        assertTrue(getInnerExpression(testExpr4) instanceof AssignExpr);
+        assertTrue(getInnerExpression(testExpr4, 1) instanceof OrExpr);
+        assertTrue(getInnerExpression(testExpr4, 1, 0) instanceof XorExpr);
+        assertTrue(getInnerExpression(testExpr4, 1, 0, 1) instanceof RelationalExpr);
+        assertTrue(getInnerExpression(testExpr4, 1, 1) instanceof AndExpr);
+        assertTrue(getInnerExpression(testExpr4, 1, 1, 1) instanceof ShiftExpr);
+        assertTrue(getInnerExpression(testExpr4, 1, 1, 1, 1) instanceof AddExpr);
+        assertTrue(getInnerExpression(testExpr4, 1, 1, 1, 1, 1) instanceof MulExpr);
+        assertTrue(getInnerExpression(testExpr4, 1, 1, 1, 1, 1, 0) instanceof MemberAccessExpr);
+        assertTrue(getInnerExpression(testExpr4, 1, 1, 1, 1, 1, 0, 0) instanceof QuoteExpr);
+        assertTrue(getInnerExpression(testExpr4, 1, 1, 1, 1, 2) instanceof QuoteExpr);
+        assertTrue(getInnerExpression(testExpr4, 1, 1, 1, 1, 2, 0) instanceof SubscriptExpr);
+    }
 }
