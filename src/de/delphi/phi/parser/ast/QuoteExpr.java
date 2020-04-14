@@ -7,13 +7,10 @@ import de.delphi.phi.data.PhiObject;
 import de.delphi.phi.data.PhiSymbol;
 import de.delphi.phi.data.Type;
 
-public class QuoteExpr extends Expression {
-
-    private Expression body;
+public class QuoteExpr extends UnaryExpr {
 
     public QuoteExpr(Expression body){
-        this.body = body;
-        body.parentExpression = this;
+        super(body);
     }
 
     @Override

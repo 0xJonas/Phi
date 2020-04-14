@@ -45,6 +45,20 @@ public class AssignExpr extends Expression {
     }
 
     @Override
+    public Expression getChild(int index) {
+        switch(index){
+            case 0: return leftExpr;
+            case 1: return rightExpr;
+            default: throw new IndexOutOfBoundsException();
+        }
+    }
+
+    @Override
+    public int countChildren() {
+        return 2;
+    }
+
+    @Override
     public PhiObject eval(PhiCollection parentScope) throws PhiRuntimeException {
         scope = new PhiScope(parentScope);
 

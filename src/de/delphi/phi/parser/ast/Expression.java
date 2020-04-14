@@ -23,5 +23,9 @@ public abstract class Expression {
         return obj;
     }
 
+    public abstract Expression getChild(int index);
+
+    public abstract int countChildren();
+
     public abstract PhiObject eval(PhiCollection parentScope) throws PhiRuntimeException;
 }

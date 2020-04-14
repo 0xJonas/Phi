@@ -7,13 +7,10 @@ import de.delphi.phi.data.PhiNull;
 import de.delphi.phi.data.PhiObject;
 import de.delphi.phi.data.Type;
 
-public class NewExpr extends Expression {
-
-    private Expression body;
+public class NewExpr extends UnaryExpr {
 
     public NewExpr(Expression body){
-        this.body = body;
-        body.parentExpression = this;
+        super(body);
     }
 
     @Override

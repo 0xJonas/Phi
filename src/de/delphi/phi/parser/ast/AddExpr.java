@@ -7,28 +7,17 @@ import de.delphi.phi.data.*;
 
 import java.util.List;
 
-public class AddExpr extends Expression {
+public class AddExpr extends BinaryExpr {
 
     public static final int OP_ADD = 0;
     public static final int OP_SUB = 1;
 
-    private Expression[] operands;
-
-    private Integer[] operators;
-
     public AddExpr(List<Expression> operands, List<Integer> operators) {
-        this.operands = operands.toArray(new Expression[0]);
-        this.operators = operators.toArray(new Integer[0]);
-
-        for(Expression expr: operands)
-            expr.parentExpression = this;
+        super(operands, operators);
     }
 
     public AddExpr(Expression left, int operator, Expression right){
-        operands = new Expression[]{left, right};
-        operators = new Integer[]{OP_ADD, operator};
-        left.parentExpression = this;
-        right.parentExpression = this;
+        super(left, operator, right);
     }
 
     private PhiObject add(PhiObject po1, PhiObject po2) throws PhiRuntimeException {

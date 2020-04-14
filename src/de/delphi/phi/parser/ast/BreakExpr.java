@@ -20,6 +20,19 @@ public class BreakExpr extends Expression {
     }
 
     @Override
+    public Expression getChild(int index) {
+        if(returnExpr != null && index == 0)
+            return returnExpr;
+        else
+            throw new IndexOutOfBoundsException();
+    }
+
+    @Override
+    public int countChildren() {
+        return returnExpr != null ? 1 : 0;
+    }
+
+    @Override
     public PhiObject eval(PhiCollection parentScope) throws PhiRuntimeException {
         PhiObject retVal = PhiNull.NULL;
         if(returnExpr != null){

@@ -18,6 +18,19 @@ public class CompoundExpr extends ExitableExpr{
             expr.parentExpression = this;
     }
 
+    @Override
+    public Expression getChild(int index) {
+        if(index >= children.length || index < 0)
+            throw new IndexOutOfBoundsException();
+        else
+            return children[index];
+    }
+
+    @Override
+    public int countChildren() {
+        return children.length;
+    }
+
     public PhiObject eval(PhiCollection parentScope) throws PhiRuntimeException {
         this.scope = new PhiScope(parentScope);
 

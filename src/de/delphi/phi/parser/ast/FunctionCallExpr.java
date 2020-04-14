@@ -25,6 +25,25 @@ public class FunctionCallExpr extends Expression {
     }
 
     @Override
+    public Expression getChild(int index) {
+        if(index == 0)
+            return functionExpr;
+        else if(index > params.length() || index < 0){
+            int paramIndex = index - 1;
+            if((paramIndex & 1) == 0)
+                return params.getName(paramIndex >> 1);
+            else
+                return params.getValue(paramIndex >> 1);
+        }else
+            throw new IndexOutOfBoundsException();
+    }
+
+    @Override
+    public int countChildren() {
+        return 2 * params.length() + 1;
+    }
+
+    @Override
     public PhiObject eval(PhiCollection parentScope) throws PhiRuntimeException {
         scope = new PhiScope(parentScope);
 

@@ -23,6 +23,22 @@ public class ForExpr extends ExitableExpr{
     }
 
     @Override
+    public Expression getChild(int index) {
+        switch(index){
+            case 0: return init;
+            case 1: return condition;
+            case 2: return iteration;
+            case 3: return body;
+            default: throw new IndexOutOfBoundsException();
+        }
+    }
+
+    @Override
+    public int countChildren() {
+        return 0;
+    }
+
+    @Override
     public PhiObject eval(PhiCollection parentScope) throws PhiRuntimeException {
         this.scope = new PhiScope(parentScope);
 

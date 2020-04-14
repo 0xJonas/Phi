@@ -5,7 +5,7 @@ import de.delphi.phi.data.PhiCollection;
 import de.delphi.phi.data.PhiObject;
 
 /**
- * Wraps another expression, to mark it as the direction body of a function. This is
+ * Wraps another expression, to mark it as the direct body of a function. This is
  * needed to make ReturnExpr work correctly.
  */
 public class FunctionBody extends ExitableExpr {
@@ -15,6 +15,19 @@ public class FunctionBody extends ExitableExpr {
     public FunctionBody(Expression body){
         this.body = body;
         body.parentExpression = this;
+    }
+
+    @Override
+    public Expression getChild(int index) {
+        if(index == 0)
+            return body;
+        else
+            throw new IndexOutOfBoundsException();
+    }
+
+    @Override
+    public int countChildren() {
+        return 1;
     }
 
     @Override

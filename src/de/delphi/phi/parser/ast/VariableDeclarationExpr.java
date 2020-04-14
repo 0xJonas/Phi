@@ -20,6 +20,22 @@ public class VariableDeclarationExpr extends Expression {
     }
 
     @Override
+    public Expression getChild(int index) {
+        if(index >= 2 * content.length() || index < 0)
+            throw new IndexOutOfBoundsException();
+        if((index & 1) == 0){
+            return content.getName(index >> 1);
+        }else{
+            return content.getValue(index >> 1);
+        }
+    }
+
+    @Override
+    public int countChildren() {
+        return 2 * content.length();
+    }
+
+    @Override
     public PhiObject eval(PhiCollection parentScope) throws PhiRuntimeException {
         scope = new PhiScope(parentScope);
         PhiObject name = PhiNull.NULL;

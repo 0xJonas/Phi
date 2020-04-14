@@ -21,6 +21,20 @@ public class MemberAccessExpr extends Expression {
     }
 
     @Override
+    public Expression getChild(int index) {
+        switch(index){
+            case 0: return collectionExpr;
+            case 1: return nameExpr;
+            default: throw new IndexOutOfBoundsException();
+        }
+    }
+
+    @Override
+    public int countChildren() {
+        return 2;
+    }
+
+    @Override
     public PhiObject eval(PhiCollection parentScope) throws PhiRuntimeException {
         scope = new PhiScope(parentScope);
 

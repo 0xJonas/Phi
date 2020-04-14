@@ -2,25 +2,18 @@ package de.delphi.phi.parser.ast;
 
 import de.delphi.phi.PhiRuntimeException;
 import de.delphi.phi.data.PhiCollection;
-import de.delphi.phi.data.PhiNull;
 import de.delphi.phi.data.PhiObject;
 
-public class ReturnExpr extends Expression {
+public class ReturnExpr extends UnaryExpr {
 
-    private Expression returnExpr;
-
-    public ReturnExpr(Expression returnExpr){
-        this.returnExpr = returnExpr;
-        returnExpr.parentExpression = this;
+    public ReturnExpr(Expression body){
+        super(body);
     }
 
     @Override
     public PhiObject eval(PhiCollection parentScope) throws PhiRuntimeException {
-        PhiObject retVal = PhiNull.NULL;
-        if(returnExpr != null){
-            retVal = returnExpr.eval(parentScope);
-            retVal = bindAndLookUp(retVal, parentScope);
-        }
+        PhiObject retVal = body.eval(parentScope);
+        retVal = bindAndLookUp(retVal, parentScope);
 
         Expression current = this;
         while(!(current instanceof FunctionBody)){

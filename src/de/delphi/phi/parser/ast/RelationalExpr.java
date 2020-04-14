@@ -10,7 +10,7 @@ import de.delphi.phi.data.Type;
 
 import java.util.List;
 
-public class RelationalExpr extends Expression {
+public class RelationalExpr extends BinaryExpr {
 
     public static final int OP_EQUALS = 0;
     public static final int OP_NOT_EQUALS = 1;
@@ -19,22 +19,12 @@ public class RelationalExpr extends Expression {
     public static final int OP_GREATER_THAN = 4;
     public static final int OP_GREATER_EQUALS = 5;
 
-    private Expression[] operands;
-
-    private Integer[] operators;
-
     public RelationalExpr(List<Expression> operands, List<Integer> operators){
-        this.operands = operands.toArray(new Expression[0]);
-        this.operators = operators.toArray(new Integer[0]);
-        for(Expression expr: operands)
-            expr.parentExpression = this;
+        super(operands, operators);
     }
 
     public RelationalExpr(Expression left, int operator, Expression right){
-        operands = new Expression[]{left, right};
-        operators = new Integer[]{OP_EQUALS, operator};
-        left.parentExpression = this;
-        right.parentExpression = this;
+        super(left, operator, right);
     }
 
     private boolean opEquals(PhiObject left, PhiObject right) throws PhiRuntimeException{

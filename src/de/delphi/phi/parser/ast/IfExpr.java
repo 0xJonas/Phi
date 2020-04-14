@@ -22,6 +22,21 @@ public class IfExpr extends Expression{
     }
 
     @Override
+    public Expression getChild(int index) {
+        switch(index){
+            case 0: return condition;
+            case 1: return trueExpr;
+            case 2: return falseExpr;
+            default: throw new IndexOutOfBoundsException();
+        }
+    }
+
+    @Override
+    public int countChildren() {
+        return falseExpr == null ? 2:3;
+    }
+
+    @Override
     public PhiObject eval(PhiCollection parentScope) throws PhiRuntimeException {
         scope = new PhiScope(parentScope);
 

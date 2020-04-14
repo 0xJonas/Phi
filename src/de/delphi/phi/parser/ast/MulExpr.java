@@ -7,28 +7,18 @@ import de.delphi.phi.data.*;
 
 import java.util.List;
 
-public class MulExpr extends Expression {
+public class MulExpr extends BinaryExpr {
 
     public static final int OP_MUL = 0;
     public static final int OP_DIV = 1;
     public static final int OP_MOD = 2;
 
-    private Expression[] operands;
-
-    private Integer[] operators;
-
     public MulExpr(List<Expression> operands, List<Integer> operators){
-        this.operands = operands.toArray(new Expression[0]);
-        this.operators = operators.toArray(new Integer[0]);
-        for(Expression expr: operands)
-            expr.parentExpression = this;
+        super(operands, operators);
     }
 
     public MulExpr(Expression left, int operator, Expression right){
-        operands = new Expression[]{left, right};
-        operators = new Integer[]{OP_MUL, operator};
-        left.parentExpression = this;
-        right.parentExpression = this;
+        super(left, operator, right);
     }
 
     private PhiObject mul(PhiObject po1, PhiObject po2) throws PhiRuntimeException{

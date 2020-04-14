@@ -11,6 +11,17 @@ public class Atom extends Expression {
         this.content = content;
     }
 
+
+    @Override
+    public Expression getChild(int index) {
+        throw new IndexOutOfBoundsException();
+    }
+
+    @Override
+    public int countChildren() {
+        return 0;
+    }
+
     @Override
     public PhiObject eval(PhiCollection scope) {
         return content;

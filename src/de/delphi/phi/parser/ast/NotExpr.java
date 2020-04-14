@@ -7,13 +7,10 @@ import de.delphi.phi.data.PhiInt;
 import de.delphi.phi.data.PhiObject;
 import de.delphi.phi.data.Type;
 
-public class NotExpr extends Expression {
-
-    private Expression body;
+public class NotExpr extends UnaryExpr {
 
     public NotExpr(Expression body){
-        this.body = body;
-        body.parentExpression = this;
+        super(body);
     }
 
     @Override

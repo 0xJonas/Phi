@@ -19,6 +19,20 @@ public class WhileExpr extends ExitableExpr{
     }
 
     @Override
+    public Expression getChild(int index) {
+        switch(index){
+            case 0: return condition;
+            case 1: return body;
+            default: throw new IndexOutOfBoundsException();
+        }
+    }
+
+    @Override
+    public int countChildren() {
+        return 2;
+    }
+
+    @Override
     public PhiObject eval(PhiCollection parentScope) throws PhiRuntimeException {
         this.scope = new PhiScope(parentScope);
 

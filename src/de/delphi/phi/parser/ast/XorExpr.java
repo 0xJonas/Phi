@@ -8,22 +8,17 @@ import de.delphi.phi.data.PhiInt;
 import de.delphi.phi.data.PhiObject;
 import de.delphi.phi.data.Type;
 
+import java.util.Collections;
 import java.util.List;
 
-public class XorExpr extends Expression {
-
-    private Expression[] operands;
+public class XorExpr extends BinaryExpr {
 
     public XorExpr(List<Expression> operands){
-        this.operands = operands.toArray(new Expression[0]);
-        for(Expression expr: operands)
-            expr.parentExpression = this;
+        super(operands, Collections.nCopies(operands.size(), 0));
     }
 
     public XorExpr(Expression left, Expression right){
-        operands = new Expression[]{left, right};
-        left.parentExpression = this;
-        right.parentExpression = this;
+        super(left, 0, right);
     }
 
     @Override
