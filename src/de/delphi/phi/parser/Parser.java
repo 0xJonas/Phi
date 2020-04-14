@@ -69,7 +69,6 @@ public class Parser {
         consume();
         expect(Tag.LEFT_PARENTHESIS, "( expected.");
         ExpressionList params = declList(Tag.RIGHT_PARENTHESIS);
-        expect(Tag.RIGHT_PARENTHESIS, ") expected.");
         expect(Tag.ARROW, "-> expected.");  //Maybe not?
         Expression body = expression();
         return new FunctionDefinitionExpr(params, new FunctionBody(body));
@@ -103,6 +102,8 @@ public class Parser {
         Expression init = expression();
         Expression condition = expression();
         Expression iteration = expression();
+        if(peek.tag == Tag.DO)
+            consume();
         Expression body = expression();
         return new ForExpr(init, condition, iteration, body);
     }
@@ -113,6 +114,7 @@ public class Parser {
         do{
             expressions.add(expression());
         }while(peek.tag != Tag.RIGHT_BRACE);
+        consume();
         return new CompoundExpr(expressions);
     }
 
@@ -178,7 +180,6 @@ public class Parser {
     private Expression collectionExpr() throws IOException{
         consume();
         ExpressionList content = declList(Tag.RIGHT_BRACKET);
-        expect(Tag.RIGHT_BRACKET, "] expected.");
         return new CollectionDefinitionExpr(content);
     }
 
@@ -247,10 +248,9 @@ public class Parser {
 
     private void functionDecl(List<Expression> names, List<Expression> values) throws IOException {
         consume();
-        names.add(expression());
+        names.add(atom());
         expect(Tag.LEFT_PARENTHESIS, "( expected.");
         ExpressionList params = declList(Tag.RIGHT_PARENTHESIS);
-        expect(Tag.RIGHT_PARENTHESIS, ") expected");
         Expression body = expression();
         values.add(new FunctionDefinitionExpr(params, new FunctionBody(body)));
     }
@@ -432,6 +432,7 @@ public class Parser {
                     consume();
                     return new Atom(symbol);
                 case LEFT_PARENTHESIS:
+                    consume();
                     Expression subExpr = expression();
                     expect(Tag.RIGHT_PARENTHESIS, ") expected.");
                     return subExpr;
@@ -448,6 +449,8 @@ public class Parser {
     }
 
     public Expression nextExpression() throws PhiSyntaxException, IOException {
+        if(peek == null)
+            peek = lexer.nextToken();
         errorLog = new StringBuilder();
         Expression expr = expression();
         if(errorLog.length() > 0)
