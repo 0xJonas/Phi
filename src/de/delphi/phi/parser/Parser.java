@@ -231,6 +231,8 @@ public class Parser {
                 functionDecl(names, values);
             else
                 varDecl(names, values);
+            if(peek.tag != closingTag)
+                expect(Tag.COMMA, ", expected.");
         }
         consume();
         return new ExpressionList(names, values);
